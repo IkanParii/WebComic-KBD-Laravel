@@ -41,3 +41,28 @@ nb: seringlah melakukan git pull pada saat membuka vscode pertama kali, agar cod
 ```
 git pull
 ```
+
+## Pengerjaan Laporan
+
+### Laporan KBD
+
+1. Role 
+- user: hanya dapat membaca cerita (komik)
+- ⁠admin: mengubah (mengedit, menghapus, menambahkan) user, publiser, komik.
+- ⁠publiser: mengubah (menghapus dan menambahkan) komik.
+
+2. Tech Tect: larafel dan tailwind css
+- Database: mysql
+
+3. Desain: 
+- Dashboard admin (edit, user, publiser, komik)
+- ⁠landing page
+- ⁠page publiser ( write + edit (hasil cerita yang sudah dipublish)) dalam bentuk slide bar yang di scroll.
+
+4. Database
+- Table role
+- ⁠Table user
+- ⁠Table publiser
+- ⁠Table Komik
+
+5. Diagram ERD
