@@ -13,11 +13,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Bawaan dari Laravel (Boleh dihapus, boleh dibiarin)
         // User::factory(10)->create();
 
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+        ]);
+
+        $this->call([
+            GenreSeeder::class,
         ]);
     }
 }
