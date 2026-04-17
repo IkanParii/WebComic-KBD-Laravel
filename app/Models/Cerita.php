@@ -13,7 +13,8 @@ class Cerita extends Model
         'user_id', 
         'judul', 
         'deskripsi_singkat', 
-        'tanggal_rilis'
+        'tanggal_rilis',
+        'isi_cerita',
     ];
 
     // --- RELASI DATABASE ---

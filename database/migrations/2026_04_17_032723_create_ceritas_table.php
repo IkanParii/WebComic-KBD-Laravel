@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('judul');
             $table->text('deskripsi_singkat');
+            $table->longText('isi_cerita');
             // Foreign key ke tabel users (publisher)
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->date('tanggal_rilis');
