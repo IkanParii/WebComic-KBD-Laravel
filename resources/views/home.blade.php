@@ -23,9 +23,9 @@
     <header class="sticky top-0 z-50 flex w-full items-center justify-between border-b border-[#e6dcff] bg-white/85 px-[6%] py-5 backdrop-blur-md">
         <div class="flex items-center gap-3 text-[1.1rem] font-bold">
             <div class="mb-0 flex h-12 w-12 items-center justify-center rounded-[18px] bg-white text-base font-bold text-[#7b4dff] shadow-[0_8px_20px_rgba(0,0,0,0.12)] uppercase">
-                {{ substr(Auth::user()->name ?? 'AV', 0, 2) }}
+        AV
             </div>
-            <span>AnimeVerse</span>
+            <span>AuVerse</span>
         </div>
 
         <nav class="flex flex-wrap items-center gap-[18px]">
