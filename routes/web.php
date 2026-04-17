@@ -26,4 +26,10 @@ Route::middleware(['auth', 'publisher'])->prefix('publisher')->name('publisher.'
     Route::put('/update-cerita/{id}', [PublisherController::class, 'update'])->name('update');
 });
 
+
+Route::get('/home', function () {
+    return view('home'); // Pastiin nama file blade-nya bener, misal: resources/views/home.blade.php
+})->middleware(['auth'])->name('home');
+
+
 require __DIR__.'/auth.php';

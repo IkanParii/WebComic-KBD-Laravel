@@ -17,6 +17,6 @@ class CheckPublisher
         }
 
         // Kalau user biasa nyoba masuk, tendang balik ke dashboard biasa/home
-        return redirect('/dashboard')->with('error', 'Akses ditolak! Anda bukan Publisher.');
+        return redirect('/home')->with('error', 'Akses ditolak! Anda bukan Publisher.');
     }
 }
