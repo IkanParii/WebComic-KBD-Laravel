@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Cerita - AuStory</title>
+    <title>Tambah Cerita - AuVerse</title>
     @vite(['resources/css/app.css'])
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>body { font-family: 'Poppins', sans-serif; }</style>
 </head>
 <body class="bg-[#fcfcfd] flex min-h-screen">
 
-    <aside class="w-64 bg-[#7e57c2] text-white flex flex-col pt-8">
+    <aside class="w-64 bg-[#7B4DFF] text-white flex flex-col pt-8">
         <div class="px-6 flex items-center gap-3 mb-12">
-            <div class="w-10 h-10 bg-white rounded-full flex justify-center items-center text-purple-600 font-bold">AS</div>
+            <div class="w-10 h-10 bg-white rounded-full flex justify-center items-center text-[#7B4DFF] font-bold">AS</div>
             <div>
-                <h1 class="font-bold text-lg leading-tight">AuStory</h1>
-                <p class="text-[10px] text-purple-200">Admin Panel</p>
+                <h1 class="font-bold text-lg leading-tight">AuVerse</h1>
+                <p class="text-[10px] text-[#e6dcff]">Admin Panel</p>
             </div>
         </div>
         <nav class="flex flex-col gap-3 px-4">
@@ -49,11 +49,11 @@
                 <div class="grid grid-cols-2 gap-6 mb-4">
                     <div>
                         <label class="block text-sm font-semibold mb-2 text-gray-700">Judul AU</label>
-                        <input type="text" name="judul" value="{{ old('judul') }}" required placeholder="Contoh : Tokyo Light" class="w-full h-11 border border-gray-300 rounded-xl px-4 outline-none focus:ring-2 focus:ring-purple-500">
+                        <input type="text" name="judul" value="{{ old('judul') }}" required placeholder="Contoh : Tokyo Light" class="w-full h-11 border border-gray-300 rounded-xl px-4 outline-none focus:ring-2 focus:ring-[#7B4DFF] focus:border-[#7B4DFF]">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-2 text-gray-700">Tanggal Rilis</label>
-                        <input type="date" name="tanggal_rilis" value="{{ old('tanggal_rilis') }}" required class="w-full h-11 border border-gray-300 rounded-xl px-4 outline-none focus:ring-2 focus:ring-purple-500 text-gray-600">
+                        <input type="date" name="tanggal_rilis" value="{{ old('tanggal_rilis') }}" required class="w-full h-11 border border-gray-300 rounded-xl px-4 outline-none focus:ring-2 focus:ring-[#7B4DFF] focus:border-[#7B4DFF] text-gray-600">
                     </div>
                 </div>
 
@@ -62,7 +62,7 @@
                     <div class="grid grid-cols-4 gap-3 border border-gray-300 p-4 rounded-xl">
                         @foreach($genres as $genre)
                             <label class="flex items-center space-x-2 cursor-pointer text-sm">
-                                <input type="checkbox" name="genres[]" value="{{ $genre->id }}" class="text-purple-600 rounded focus:ring-purple-500">
+                                <input type="checkbox" name="genres[]" value="{{ $genre->id }}" class="rounded text-[#7B4DFF] focus:ring-[#7B4DFF]">
                                 <span class="text-gray-600">{{ $genre->nama_genre }}</span>
                             </label>
                         @endforeach
@@ -71,15 +71,15 @@
 
                 <div class="mb-6">
                     <label class="block text-sm font-semibold mb-2 text-gray-700">Sinopsis Singkat</label>
-                    <textarea name="deskripsi_singkat" required rows="3" placeholder="Tulis Sinopsis Cerita......" class="w-full border border-gray-300 rounded-xl p-4 outline-none focus:ring-2 focus:ring-purple-500 resize-none">{{ old('deskripsi_singkat') }}</textarea>
+                    <textarea name="deskripsi_singkat" required rows="3" placeholder="Tulis Sinopsis Cerita......" class="w-full border border-gray-300 rounded-xl p-4 outline-none focus:ring-2 focus:ring-[#7B4DFF] focus:border-[#7B4DFF] resize-none">{{ old('deskripsi_singkat') }}</textarea>
                 </div>
 
                 <div class="mb-6">
                     <label class="block text-sm font-semibold mb-2 text-gray-700">Isi Cerita Lengkap</label>
-                    <textarea name="isi_cerita" required rows="10" placeholder="Tulis cerita lengkap AU-mu di sini..." class="w-full border border-gray-300 rounded-xl p-4 outline-none focus:ring-2 focus:ring-purple-500 resize-none">{{ old('isi_cerita') }}</textarea>
+                    <textarea name="isi_cerita" required rows="10" placeholder="Tulis cerita lengkap AU-mu di sini..." class="w-full border border-gray-300 rounded-xl p-4 outline-none focus:ring-2 focus:ring-[#7B4DFF] focus:border-[#7B4DFF] resize-none">{{ old('isi_cerita') }}</textarea>
                 </div>
 
-                <button type="submit" class="w-full bg-[#7e57c2] hover:bg-purple-600 text-white font-semibold py-3 rounded-xl transition shadow-md hover:shadow-lg">
+                <button type="submit" class="w-full bg-[#7B4DFF] hover:bg-[#6938f0] text-white font-semibold py-3 rounded-xl transition shadow-md hover:shadow-lg">
                     Tambah Cerita
                 </button>
             </form>
