@@ -119,7 +119,7 @@
     <section id="about" class="px-4 pb-24 pt-8 md:pb-28 md:pt-16">
         <div class="mx-auto max-w-[1200px]">
             <div class="text-center">
-                <h2 class="text-[32px] font-extrabold text-[#222222] md:text-[48px]">Kenapa AuStory?</h2>
+                <h2 class="text-[32px] font-extrabold text-[#222222] md:text-[48px]">Kenapa AuVerse?</h2>
                 <p class="mt-2 text-[15px] text-[#7b7b87] md:text-[20px]">
                     Platform yang simple, fun, dan punya vibe anime banget.
                 </p>
