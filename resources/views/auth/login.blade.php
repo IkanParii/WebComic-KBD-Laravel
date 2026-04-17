@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - AuStory</title>
+    <title>Login - AuVerse</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -28,7 +28,7 @@
 
                 <div class="relative z-10 max-w-sm text-white">
                     <div class="mb-8 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-lg">
-                        <span class="text-2xl font-bold text-[#6C63FF]">AS</span>
+                        <span class="text-2xl font-bold text-[#6C63FF]">AV</span>
                     </div>
 
                     <h1 class="mb-4 text-4xl font-bold leading-tight">AuStory</h1>
