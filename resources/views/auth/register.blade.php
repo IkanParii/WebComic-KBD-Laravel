@@ -26,8 +26,8 @@
 
             <h1 class="text-4xl font-bold mb-3">AuStory</h1>
             <p class="text-sm leading-7">
-                Masuk ke dunia anime favoritmu. Simpan list tontonan,
-                karakter favorit, dan jelajahi vibe anime yang seru.
+                Masuki dunia favoritmu, simpan daftar cerita pilihan, tandai karakter favoritmu, 
+                dan jelajahi berbagai vibe AU yang seru.
             </p>
         </div>
 
