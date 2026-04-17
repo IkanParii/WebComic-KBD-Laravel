@@ -21,7 +21,7 @@
         <nav class="flex flex-col gap-3 px-4">
             <a href="{{ route('publisher.create') }}" class="px-4 py-3 rounded-xl font-medium text-sm transition hover:bg-white/20">Tambah Cerita</a>
             <a href="{{ route('publisher.index') }}" class="bg-white/20 px-4 py-3 rounded-xl font-medium text-sm transition hover:bg-white/30">Daftar Cerita</a>
-            <a href="{{ url('/') }}" class="px-4 py-3 rounded-xl font-medium text-sm transition hover:bg-white/20 mt-4">Back to Site</a>
+            <a href="{{ url('/home') }}" class="px-4 py-3 rounded-xl font-medium text-sm transition hover:bg-white/20 mt-4">Back to Site</a>
         </nav>
     </aside>
 
