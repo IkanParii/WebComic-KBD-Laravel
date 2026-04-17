@@ -25,6 +25,7 @@ Route::middleware(['auth', 'publisher'])->prefix('publisher')->name('publisher.'
     Route::post('/tambah-cerita', [PublisherController::class, 'store'])->name('store');
     Route::get('/edit-cerita/{id}', [PublisherController::class, 'edit'])->name('edit');
     Route::put('/update-cerita/{id}', [PublisherController::class, 'update'])->name('update');
+    Route::delete('/hapus-cerita/{id}', [PublisherController::class, 'destroy'])->name('destroy');
 });
 
 // --- RUTE HOME FINAL ---

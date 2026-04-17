@@ -8,9 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>body { font-family: 'Poppins', sans-serif; }</style>
 </head>
-<body class="bg-[#fcfcfd] flex min-h-screen">
+<body class="bg-[#fcfcfd] flex min-h-screen relative">
 
-    <aside class="w-64 bg-[#7B4DFF] text-white flex flex-col pt-8">
+    <aside class="w-64 bg-[#7B4DFF] text-white flex flex-col pt-8 fixed h-full">
         <div class="px-6 flex items-center gap-3 mb-12">
             <div class="w-10 h-10 bg-white rounded-full flex justify-center items-center text-[#7B4DFF] font-bold">
                 AV
@@ -34,7 +34,7 @@
         </nav>
     </aside>
 
-    <main class="flex-1 p-10">
+    <main class="flex-1 ml-64 p-10">
         <div class="flex justify-between items-start mb-8">
             <div>
                 <h2 class="text-3xl font-bold text-gray-800">Edit Cerita</h2>
@@ -119,14 +119,73 @@
                     >{{ old('isi_cerita', $cerita->isi_cerita) }}</textarea>
                 </div>
 
-                <button
-                    type="submit"
-                    class="w-full bg-[#7B4DFF] hover:bg-[#6938f0] text-white font-semibold py-3 rounded-xl transition shadow-md hover:shadow-lg"
-                >
-                    Update Cerita
-                </button>
+                <div class="flex gap-4">
+                    <button
+                        type="submit"
+                        class="flex-1 bg-[#7B4DFF] hover:bg-[#6938f0] text-white font-semibold py-3 rounded-xl transition shadow-md hover:shadow-lg"
+                    >
+                        Update Cerita
+                    </button>
+                    
+                    <button
+                        type="button"
+                        onclick="bukaPopup()"
+                        class="px-8 bg-red-50 text-red-600 font-semibold py-3 rounded-xl border border-red-100 transition hover:bg-red-100"
+                    >
+                        Hapus Cerita
+                    </button>
+                </div>
             </form>
         </div>
     </main>
+
+    <div id="popupHapus" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-900/40 px-4 backdrop-blur-sm transition-opacity duration-300">
+        <div class="w-full max-w-md scale-95 transform rounded-[32px] bg-white p-8 shadow-2xl transition-transform duration-300">
+            <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 text-3xl">
+                🗑️
+            </div>
+            
+            <h3 class="mb-2 text-center text-xl font-bold text-gray-800">Hapus Cerita Ini?</h3>
+            <p class="mb-8 text-center text-sm text-gray-500">
+                Kamu yakin mau menghapus <span class="font-bold text-[#7B4DFF]">"{{ $cerita->judul }}"</span>? Data ini bakal hilang selamanya brow.
+            </p>
+
+            <div class="flex gap-4">
+                <button type="button" onclick="tutupPopup()" class="flex-1 rounded-xl border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-50">
+                    Batal
+                </button>
+                
+                <form action="{{ route('publisher.destroy', $cerita->id) }}" method="POST" class="flex-1 m-0">
+                    @csrf 
+                    @method('DELETE')
+                    <button type="submit" class="w-full rounded-xl bg-red-500 py-3 text-sm font-bold text-white transition hover:bg-red-600 shadow-lg shadow-red-500/30">
+                        Ya, Hapus!
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function bukaPopup() {
+            const popup = document.getElementById('popupHapus');
+            popup.classList.remove('hidden');
+            popup.classList.add('flex');
+            setTimeout(() => {
+                popup.children[0].classList.remove('scale-95');
+                popup.children[0].classList.add('scale-100');
+            }, 10);
+        }
+
+        function tutupPopup() {
+            const popup = document.getElementById('popupHapus');
+            popup.children[0].classList.remove('scale-100');
+            popup.children[0].classList.add('scale-95');
+            setTimeout(() => {
+                popup.classList.add('hidden');
+                popup.classList.remove('flex');
+            }, 200);
+        }
+    </script>
 </body>
 </html>

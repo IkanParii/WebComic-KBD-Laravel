@@ -15,14 +15,19 @@ class PublisherController extends Controller
         $ceritas = Cerita::where('user_id', Auth::id())->with('genres')->latest()->get();
         return view('publisher.index', compact('ceritas'));
     }
-
+    public function destroy($id)
+    {
+    $cerita = \App\Models\Cerita::findOrFail($id);
+    $cerita->delete();
+    return redirect()->route('publisher.index')->with('success', 'Cerita berhasil dihapus!');
+    }
     // 2. FORM TAMBAH
     public function create()
     {
         $genres = Genre::all();
         return view('publisher.create', compact('genres'));
     }
-
+    
     // 3. SIMPAN CERITA BARU
     public function store(Request $request)
     {
