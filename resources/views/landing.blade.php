@@ -129,7 +129,7 @@
                 <div class="rounded-[24px] border border-[#ddd3fb] bg-white px-6 py-7 shadow-[0_8px_18px_rgba(123,97,255,0.16)]">
                     <h3 class="text-[18px] font-bold text-[#1f1f1f]">UI Menarik</h3>
                     <p class="mt-4 text-[14px] font-medium leading-7 text-[#5f5f69]">
-                        Desain clean dengan sentuhan Au tiache yang bikin user nyaman dan tidak bingung saat eksplor
+                        Desain clean dengan sentuhan Au Creatif yang bikin user nyaman dan tidak bingung saat eksplor
                     </p>
                 </div>
 
