@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - AuStory</title>
+    <title>Admin Dashboard - AuVerse</title>
     @vite('resources/css/app.css')
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>body { font-family: 'Poppins', sans-serif; }</style>
@@ -15,38 +15,32 @@
     <aside class="fixed left-0 top-0 flex h-screen w-[260px] flex-col bg-[#7b4dff] px-6 py-8 text-white shadow-xl z-40">
         <div class="mb-12 flex items-center gap-3">
             <div class="flex h-12 w-12 items-center justify-center rounded-full bg-white text-xl font-bold text-[#7b4dff]">
-                AD
+                AV
             </div>
             <div>
-                <h2 class="text-xl font-bold leading-tight">AuStory</h2>
-                <p class="text-[11px] font-medium text-white/80">Super Admin Panel</p>
+                <h2 class="text-xl font-bold leading-tight">AuVerse</h2>
+                <p class="text-[11px] font-medium text-white/80">Admin Panel</p>
             </div>
         </div>
 
         <nav class="flex flex-col gap-2">
             <a href="#" class="rounded-xl bg-white/20 px-5 py-3 text-sm font-semibold text-white transition">
-                Dashboard Overview
+                Dashboard Admin
             </a>
-        </nav>
-
-        <div class="mt-auto flex flex-col gap-2">
             <a href="{{ route('home') }}" class="rounded-xl px-5 py-3 text-sm font-semibold text-white/70 transition hover:bg-white/10 hover:text-white">
                 Back to Site
             </a>
-            <form method="POST" action="{{ route('logout') }}" class="m-0">
-                @csrf
-                <button type="submit" class="w-full rounded-xl bg-red-500/20 px-5 py-3 text-left text-sm font-semibold text-red-100 transition hover:bg-red-500/40 hover:text-white">
-                    Logout
-                </button>
-            </form>
-        </div>
+            
+        </nav>
+
+        
     </aside>
 
     <main class="ml-[260px] flex-1 px-10 py-10">
         
         <div class="mb-8">
-            <h1 class="text-3xl font-extrabold text-[#241b3d]">Dashboard Overview</h1>
-            <p class="mt-1 text-sm text-[#6f6f79]">Pantau semua aktivitas dan kelola platform AuStory lo dari sini.</p>
+            <h1 class="text-3xl font-extrabold text-[#241b3d]">Overview</h1>
+            <p class="mt-1 text-sm text-[#6f6f79]">Kelola User, AU, dan Publisher dengan cepat.</p>
         </div>
 
         @if(session('success'))
@@ -67,7 +61,7 @@
             <div class="flex items-center gap-6 rounded-3xl border border-[#e6dcff] bg-white p-6 shadow-sm">
                 <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#efe7ff] text-2xl text-[#7b4dff]">📚</div>
                 <div>
-                    <p class="text-sm font-semibold text-[#6f6f79]">Total Komik / AU</p>
+                    <p class="text-sm font-semibold text-[#6f6f79]">Total AU</p>
                     <h3 class="text-3xl font-extrabold text-[#241b3d]">{{ $totalSemuaCerita }}</h3>
                 </div>
             </div>
@@ -115,14 +109,14 @@
 
             <div class="flex max-h-[600px] flex-col rounded-3xl border border-[#e6dcff] bg-white p-8 shadow-sm">
                 <div class="mb-6 flex items-center justify-between">
-                    <h2 class="text-xl font-bold text-[#241b3d]">Daftar Komik Terbaru</h2>
+                    <h2 class="text-xl font-bold text-[#241b3d]">Daftar AU Terbaru</h2>
                 </div>
 
                 <div class="overflow-y-auto pr-2">
                     <table class="w-full text-left text-sm">
                         <thead class="sticky top-0 bg-white pb-3">
                             <tr class="border-b border-[#f1edff] text-[#6f6f79]">
-                                <th class="pb-3 font-semibold">Judul Cerita</th>
+                                <th class="pb-3 font-semibold">Judul AU</th>
                                 <th class="pb-3 text-right font-semibold">Aksi</th>
                             </tr>
                         </thead>
@@ -138,7 +132,7 @@
                                 </td>
                             </tr>
                             @empty
-                            <tr><td colspan="2" class="py-6 text-center text-gray-500">Belum ada komik yang diunggah.</td></tr>
+                            <tr><td colspan="2" class="py-6 text-center text-gray-500">Belum ada AU yang diunggah.</td></tr>
                             @endforelse
                         </tbody>
                     </table>
