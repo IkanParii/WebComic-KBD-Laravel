@@ -116,10 +116,10 @@
                                 Nama Publisher
                             </label>
                             <input
-                                id="publisher_name"
-                                name="publisher_name"
+                                id="nama_publisher"
+                                name="nama_publisher"
                                 type="text"
-                                value="{{ old('publisher_name') }}"
+                                value="{{ old('nama_publisher') }}"
                                 placeholder="Masukkan nama publisher"
                                 class="h-14 w-full rounded-2xl border border-[#9ca3af] bg-white px-5 text-[16px] text-[#111111] outline-none transition focus:border-[#7B61FF] focus:ring-2 focus:ring-[#7B61FF]/20"
                             >
