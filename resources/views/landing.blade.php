@@ -3,138 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AnimeVerse - Landing Page</title>
-    @vite('resources/css/app.css')
-</head>
-<body class="min-h-screen overflow-x-hidden bg-[radial-gradient(circle_at_top_left,_#f4efff_0%,_#ffffff_35%),linear-gradient(135deg,_#ffffff_0%,_#f2ebff_100%)] text-[#241b3d]">
+    <title>AuStory - Home</title>
 
+    @vite(['resources/css/app.css'])
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+@php
+    // ganti path gambar di sini saja
+    $heroImage = asset('image/background.jpeg');
+@endphp
+<body class="bg-[#f8f8fb] text-[#1f1f1f]">
+
+    <!-- Navbar -->
     <header class="sticky top-0 z-50 flex w-full items-center justify-between border-b border-[#e6dcff] bg-white/85 px-[6%] py-5 backdrop-blur-md">
         <div class="flex items-center gap-3 text-[1.1rem] font-bold">
             <div class="mb-0 flex h-12 w-12 items-center justify-center rounded-[18px] bg-white text-base font-bold text-[#7b4dff] shadow-[0_8px_20px_rgba(0,0,0,0.12)]">
                 AV
             </div>
-            <span>AnimeVerse</span>
+            <span>AuVerse</span>
         </div>
 
         <nav class="flex flex-wrap items-center gap-[18px]">
             <a href="#home" class="font-semibold text-[#241b3d] no-underline">Home</a>
+            <a href="#feature" class="font-semibold text-[#241b3d] no-underline">Features</a>
             <a href="#about" class="font-semibold text-[#241b3d] no-underline">About</a>
-            <a href="#features" class="font-semibold text-[#241b3d] no-underline">Features</a>
             <a href="{{ route('login') }}" class="inline-flex items-center justify-center rounded-2xl border-2 border-[#e6dcff] bg-white px-5 py-3.5 font-bold text-[#7b4dff] transition duration-200">
                 Login
             </a>
         </nav>
     </header>
 
-    <section id="home" class="grid min-h-[calc(100vh-90px)] grid-cols-1 items-center gap-[30px] px-[6%] py-[60px] lg:grid-cols-[1.1fr_0.9fr]">
-        <div>
-            <span class="inline-block rounded-full bg-[#efe8ff] px-4 py-2.5 font-bold text-[#5b33d6]">
-                ✨ Comic Anime Platform
-            </span>
-
-            <h1 class="my-[18px] text-[2.2rem] font-bold leading-tight lg:text-[3rem]">
-                Tempat terbaik untuk
-                <span class="text-[#7b4dff]">komik, anime, dan komunitas favoritmu</span>
-            </h1>
-
-            <p class="mb-6 max-w-[600px] leading-8 text-[#6e6a7c]">
-                AnimeVerse hadir dengan desain modern, mudah dipakai, dan cocok untuk
-                pengguna muda yang suka anime, manga, dan comic style interface.
-            </p>
-
-            <div class="flex flex-wrap gap-3.5">
-                <a href="{{ route('register') }}"
-                   class="inline-flex items-center justify-center rounded-2xl bg-gradient-to-br from-[#7b4dff] to-[#5b33d6] px-5 py-3.5 font-bold text-white shadow-[0_10px_22px_rgba(123,77,255,0.25)] transition duration-200 hover:-translate-y-0.5">
-                    Mulai Sekarang
-                </a>
-                <a href="{{ route('login') }}"
-                   class="inline-flex items-center justify-center rounded-2xl border-2 border-[#e6dcff] bg-white px-5 py-3.5 font-bold text-[#7b4dff] transition duration-200">
-                    Login
-                </a>
-            </div>
+    <!-- Hero -->
+    <section id="home" class="relative overflow-hidden">
+        <div class="absolute inset-0">
+            <div class="h-full w-full bg-cover bg-center opacity-[0.14]" style="background-image: url('{{ $heroImage }}');"></div>
+            <div class="absolute inset-0 bg-white/70"></div>
         </div>
 
-        <div class="relative flex min-h-[400px] items-center justify-center">
-            <div class="w-[300px] rounded-[28px] border-[3px] border-white/50 bg-gradient-to-br from-[#7b4dff] to-[#9f7cff] p-[30px] text-white shadow-[0_18px_45px_rgba(123,77,255,0.18)]">
-                <h3 class="mb-3 text-2xl font-bold">🔥 Trending Comic</h3>
-                <p>Attack, Fantasy, School, Romance, Action</p>
-            </div>
+        <div class="relative mx-auto max-w-[1200px] px-6 pb-24 pt-16 sm:px-10 md:pb-32 md:pt-20">
+            <div class="max-w-[700px]">
+                <span class="inline-flex rounded-full bg-white px-4 py-2 text-[14px] font-semibold text-[#7B61FF] shadow-[0_4px_12px_rgba(123,97,255,0.18)]">
+                    Alternative Universe Platform
+                </span>
 
-            <div class="absolute left-5 top-10 rotate-[-10deg] rounded-full border-[3px] border-[#7b4dff] bg-white px-4 py-2.5 font-bold text-[#5b33d6] shadow-[5px_5px_0_rgba(123,77,255,0.12)]">
-                SUGOI!
-            </div>
-            <div class="absolute right-2.5 top-[70px] rotate-[10deg] rounded-full border-[3px] border-[#7b4dff] bg-white px-4 py-2.5 font-bold text-[#5b33d6] shadow-[5px_5px_0_rgba(123,77,255,0.12)]">
-                NEW EPISODE
-            </div>
-            <div class="absolute bottom-10 left-[60px] rotate-[-6deg] rounded-full border-[3px] border-[#7b4dff] bg-white px-4 py-2.5 font-bold text-[#5b33d6] shadow-[5px_5px_0_rgba(123,77,255,0.12)]">
-                MANGA TIME
+                <h1 class="mt-8 max-w-[700px] text-[38px] font-extrabold leading-[1.25] tracking-[-0.02em] text-[#111111] md:text-[58px]">
+                    Tempat terbaik untuk
+                    <span class="text-[#7B61FF]">AU, anime, dan komunitas favoritmu</span>
+                </h1>
+
+                <p class="mt-6 max-w-[720px] text-[16px] font-medium leading-8 text-[#60606b] md:text-[19px]">
+                    ComicVerse hadir dengan desain modern, mudah diakses, dan cocok untuk
+                    pengguna muda yang suka anime, manga, dan AU sytle interface
+                </p>
+
+                <div class="mt-10 flex flex-wrap items-center gap-5">
+                    <a href="{{ route('register') }}"
+                       class="rounded-[20px] bg-[#7B61FF] px-8 py-4 text-[16px] font-semibold text-white shadow-[0_8px_20px_rgba(123,97,255,0.35)] transition hover:scale-[1.02]">
+                        Daftar Sekarang
+                    </a>
+
+                    <a href="{{ route('login') }}"
+                       class="rounded-[20px] border border-[#d6cfff] bg-[#f7f5ff] px-10 py-4 text-[16px] font-semibold text-[#7B61FF] shadow-[0_8px_20px_rgba(123,97,255,0.18)] transition hover:scale-[1.02]">
+                        Login
+                    </a>
+                </div>
             </div>
         </div>
     </section>
 
-    <section id="about" class="px-[6%] py-20">
-        <div class="mb-10 text-center">
-            <h2 class="mb-2.5 text-[2.2rem] font-bold">Kenapa AnimeVerse?</h2>
-            <p class="text-[#6e6a7c]">Platform yang simple, fun, dan punya vibe anime banget.</p>
-        </div>
-
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <div class="rounded-3xl border-2 border-[#e6dcff] bg-white p-7 shadow-[0_18px_45px_rgba(123,77,255,0.18)]">
-                <h3 class="mb-3 text-xl font-bold">🎴 UI Menarik</h3>
-                <p class="leading-7 text-[#6e6a7c]">
-                    Desain clean dengan sentuhan comic anime yang bikin user nyaman dan
-                    tidak bingung saat eksplor.
+    <!-- Fitur Utama -->
+    <section id="feature" class="px-4 py-16 md:py-20">
+        <div class="mx-auto max-w-[1200px]">
+            <div class="text-center">
+                <h2 class="text-[32px] font-extrabold text-[#222222] md:text-[48px]">Fitur Utama</h2>
+                <p class="mt-2 text-[15px] text-[#7b7b87] md:text-[20px]">
+                    Semua yang kamu butuhkan di satu tempat
                 </p>
             </div>
 
-            <div class="rounded-3xl border-2 border-[#e6dcff] bg-white p-7 shadow-[0_18px_45px_rgba(123,77,255,0.18)]">
-                <h3 class="mb-3 text-xl font-bold">⚡ Mudah Digunakan</h3>
-                <p class="leading-7 text-[#6e6a7c]">
-                    Navigasi sederhana dan cocok untuk user usia 17–21 yang suka tampilan
-                    modern tapi tetap ringan.
-                </p>
-            </div>
+            <div class="mt-12 grid gap-5 md:grid-cols-3">
+                <div class="rounded-[24px] border border-[#ddd3fb] bg-white px-6 py-7 shadow-[0_8px_18px_rgba(123,97,255,0.16)]">
+                    <h3 class="text-[18px] font-bold text-[#1f1f1f]">Au Collection</h3>
+                    <p class="mt-4 text-[14px] font-medium leading-7 text-[#5f5f69]">
+                        Kelola daftar Au dan temukan judul favorit dengan mudah
+                    </p>
+                </div>
 
-            <div class="rounded-3xl border-2 border-[#e6dcff] bg-white p-7 shadow-[0_18px_45px_rgba(123,77,255,0.18)]">
-                <h3 class="mb-3 text-xl font-bold">💜 Tema Fresh</h3>
-                <p class="leading-7 text-[#6e6a7c]">
-                    Perpaduan warna ungu dan putih memberi kesan elegan, playful, dan
-                    tetap premium.
-                </p>
+                <div class="rounded-[24px] border border-[#ddd3fb] bg-white px-6 py-7 shadow-[0_8px_18px_rgba(123,97,255,0.16)]">
+                    <h3 class="text-[18px] font-bold text-[#1f1f1f]">Publisher Data</h3>
+                    <p class="mt-4 text-[14px] font-medium leading-7 text-[#5f5f69]">
+                        Lihat alur data publisher yang terhubung di platform
+                    </p>
+                </div>
+
+                <div class="rounded-[24px] border border-[#ddd3fb] bg-white px-6 py-7 shadow-[0_8px_18px_rgba(123,97,255,0.16)]">
+                    <h3 class="text-[18px] font-bold text-[#1f1f1f]">User Friendly</h3>
+                    <p class="mt-4 text-[14px] font-medium leading-7 text-[#5f5f69]">
+                        Desain dibuat nyaman untuk user baru maupun admin
+                    </p>
+                </div>
             </div>
         </div>
     </section>
 
-    <section id="features" class="px-[6%] py-20">
-        <div class="mb-10 text-center">
-            <h2 class="mb-2.5 text-[2.2rem] font-bold">Fitur Utama</h2>
-            <p class="text-[#6e6a7c]">Semua yang kamu butuhkan di satu tempat.</p>
-        </div>
-
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <div class="rounded-3xl border-2 border-[#e6dcff] bg-white p-7 shadow-[0_18px_45px_rgba(123,77,255,0.18)]">
-                <span class="mb-4 inline-block text-[2rem]">📚</span>
-                <h3 class="mb-3 text-xl font-bold">Comic Collection</h3>
-                <p class="leading-7 text-[#6e6a7c]">Kelola daftar comic dan temukan judul favorit dengan mudah.</p>
+    <!-- Kenapa -->
+    <section id="about" class="px-4 pb-24 pt-8 md:pb-28 md:pt-16">
+        <div class="mx-auto max-w-[1200px]">
+            <div class="text-center">
+                <h2 class="text-[32px] font-extrabold text-[#222222] md:text-[48px]">Kenapa AuStory?</h2>
+                <p class="mt-2 text-[15px] text-[#7b7b87] md:text-[20px]">
+                    Platform yang simple, fun, dan punya vibe anime banget.
+                </p>
             </div>
 
-            <div class="rounded-3xl border-2 border-[#e6dcff] bg-white p-7 shadow-[0_18px_45px_rgba(123,77,255,0.18)]">
-                <span class="mb-4 inline-block text-[2rem]">🏢</span>
-                <h3 class="mb-3 text-xl font-bold">Publisher Data</h3>
-                <p class="leading-7 text-[#6e6a7c]">Lihat dan atur data publisher yang terhubung di platform.</p>
-            </div>
+            <div class="mt-12 grid gap-5 md:grid-cols-3">
+                <div class="rounded-[24px] border border-[#ddd3fb] bg-white px-6 py-7 shadow-[0_8px_18px_rgba(123,97,255,0.16)]">
+                    <h3 class="text-[18px] font-bold text-[#1f1f1f]">UI Menarik</h3>
+                    <p class="mt-4 text-[14px] font-medium leading-7 text-[#5f5f69]">
+                        Desain clean dengan sentuhan Au tiache yang bikin user nyaman dan tidak bingung saat eksplor
+                    </p>
+                </div>
 
-            <div class="rounded-3xl border-2 border-[#e6dcff] bg-white p-7 shadow-[0_18px_45px_rgba(123,77,255,0.18)]">
-                <span class="mb-4 inline-block text-[2rem]">👤</span>
-                <h3 class="mb-3 text-xl font-bold">User Friendly</h3>
-                <p class="leading-7 text-[#6e6a7c]">Desain dibuat nyaman untuk user baru maupun admin.</p>
+                <div class="rounded-[24px] border border-[#ddd3fb] bg-white px-6 py-7 shadow-[0_8px_18px_rgba(123,97,255,0.16)]">
+                    <h3 class="text-[18px] font-bold text-[#1f1f1f]">Mudah Digunakan</h3>
+                    <p class="mt-4 text-[14px] font-medium leading-7 text-[#5f5f69]">
+                        Navigasi sederhana dan cocok untuk usia 17-21 yang suka tampilan modern tapi tetap ringan
+                    </p>
+                </div>
+
+                <div class="rounded-[24px] border border-[#ddd3fb] bg-white px-6 py-7 shadow-[0_8px_18px_rgba(123,97,255,0.16)]">
+                    <h3 class="text-[18px] font-bold text-[#1f1f1f]">Tema Fresh</h3>
+                    <p class="mt-4 text-[14px] font-medium leading-7 text-[#5f5f69]">
+                        Perpaduan warna ungu dan putih memberi kesan elegan, playful, dan tetap premium
+                    </p>
+                </div>
             </div>
         </div>
     </section>
-
-    <footer class="px-6 py-6 text-center text-[#6e6a7c]">
-        <p>© {{ date('Y') }} AnimeVerse. All rights reserved.</p>
-    </footer>
 
 </body>
 </html>
