@@ -9,24 +9,25 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role',
+        'nama_publisher', // <-- Wajib ada biar nggak kena error Mass Assignment
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -44,5 +45,20 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // --- RELASI DATABASE ---
+
+    // 1 User (Publisher) punya banyak Cerita
+    public function ceritas()
+    {
+        return $this->hasMany(Cerita::class);
+    }
+
+    // 1 User bisa memfavoritkan banyak Cerita
+    public function favorites()
+    {
+        // Parameter kedua ('favorites') wajib ditulis karena nama tabel pivotnya bukan bawaan laravel (cerita_user)
+        return $this->belongsToMany(Cerita::class, 'favorites');
     }
 }
