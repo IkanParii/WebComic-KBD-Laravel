@@ -19,7 +19,6 @@
 <div class="w-full max-w-5xl bg-white rounded-[28px] border border-purple-200 overflow-hidden">
     <div class="grid md:grid-cols-2">
 
-        <!-- LEFT -->
         <div class="hidden md:block bg-gradient-to-br from-purple-500 to-indigo-500 p-10 text-white">
             <div class="w-16 h-16 bg-white rounded-xl flex items-center justify-center mb-6 shadow">
                 <span class="text-purple-600 font-bold text-xl">AS</span>
@@ -32,14 +31,23 @@
             </p>
         </div>
 
-        <!-- RIGHT -->
         <div class="bg-[#fcfcfd] p-8">
             <h2 class="text-3xl font-bold">Register</h2>
             <p class="text-sm text-gray-500 mb-6">Welcome back, senpai</p>
 
-            <form class="space-y-4">
+            @if ($errors->any())
+                <div class="mb-4 p-3 bg-red-100 text-red-600 rounded-xl text-sm">
+                    <ul class="list-disc pl-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-                <!-- ROLE -->
+            <form method="POST" action="{{ route('register') }}" class="space-y-4">
+                @csrf
+
                 <div class="text-center">
                     <p class="text-sm mb-2">Daftar Sebagai</p>
 
@@ -60,48 +68,49 @@
                     <input type="hidden" name="role" id="role" value="user">
                 </div>
 
-                <!-- USERNAME -->
                 <div>
                     <label class="text-sm font-semibold">Username</label>
-                    <input type="text"
+                    <input type="text" name="name" value="{{ old('name') }}" required
                         class="w-full h-11 border rounded-xl px-4 mt-1 focus:ring-2 focus:ring-purple-500 outline-none">
                 </div>
 
-                <!-- PUBLISHER FIELD (PINDAH KE SINI) -->
                 <div id="publisherField" class="hidden">
                     <label class="text-sm font-semibold">Nama Publisher</label>
-                    <input type="text"
-                        id="publisherInput"
+                    <input type="text" id="publisherInput" name="nama_publisher" value="{{ old('nama_publisher') }}"
                         placeholder="nama publisher"
                         class="w-full h-11 border rounded-xl px-4 mt-1 focus:ring-2 focus:ring-purple-500 outline-none">
                 </div>
 
-                <!-- EMAIL -->
                 <div>
                     <label class="text-sm font-semibold">Email</label>
-                    <input type="email"
+                    <input type="email" name="email" value="{{ old('email') }}" required
                         placeholder="contoh@gmail.com"
                         class="w-full h-11 border rounded-xl px-4 mt-1 focus:ring-2 focus:ring-purple-500 outline-none">
                 </div>
 
-                <!-- PASSWORD -->
                 <div>
                     <label class="text-sm font-semibold">Password</label>
-                    <input type="password"
+                    <input type="password" name="password" required
                         placeholder="Masukkan Password"
                         class="w-full h-11 border rounded-xl px-4 mt-1 focus:ring-2 focus:ring-purple-500 outline-none">
                 </div>
+                
+                <div>
+                    <label class="text-sm font-semibold">Konfirmasi Password</label>
+                    <input type="password" name="password_confirmation" required
+                        placeholder="Ulangi Password"
+                        class="w-full h-11 border rounded-xl px-4 mt-1 focus:ring-2 focus:ring-purple-500 outline-none">
+                </div>
 
-                <!-- BUTTON -->
-                <button class="w-full h-11 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl font-semibold mt-2">
+                <button type="submit" class="w-full h-11 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl font-semibold mt-2">
                     Daftar Sekarang
                 </button>
 
                 <p class="text-sm text-center text-gray-500">
                     Sudah punya akun ?
                     <a href="{{ route('login') }}" class="text-purple-500 font-medium hover:underline">
-        Login di sini
-    </a>
+                        Login di sini
+                    </a>
                 </p> 
 
             </form>

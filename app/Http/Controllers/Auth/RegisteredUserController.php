@@ -33,13 +33,21 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            // Pastikan password ini sesuai (pakai confirmed kalau lo pake input konfirmasi di form)
+            'password' => ['required', 'confirmed', 'min:8'], 
+            'role' => ['required', 'in:user,publisher'],
+            'nama_publisher' => ['required_if:role,publisher', 'nullable', 'string', 'max:255'],
+        ], [
+            'nama_publisher.required_if' => 'Nama publisher wajib diisi jika memilih publisher.',
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            // INI YANG PALING PENTING BIAR MASUK KE DATABASE
+            'role' => $request->role,
+            'nama_publisher' => $request->role === 'publisher' ? $request->nama_publisher : null,
         ]);
 
         event(new Registered($user));
