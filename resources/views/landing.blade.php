@@ -61,8 +61,8 @@
                 </h1>
 
                 <p class="mt-6 max-w-[720px] text-[16px] font-medium leading-8 text-[#60606b] md:text-[19px]">
-                    ComicVerse hadir dengan desain modern, mudah diakses, dan cocok untuk
-                    pengguna muda yang suka anime, manga, dan AU sytle interface
+                    AuVerse hadir dengan desain modern, mudah diakses, dan cocok untuk
+                    pengguna muda yang suka anime, manga, dan AU creative
                 </p>
 
                 <div class="mt-10 flex flex-wrap items-center gap-5">
