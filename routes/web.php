@@ -6,6 +6,7 @@ use App\Http\Controllers\PublisherController;
 use App\Models\Cerita;
 use App\Models\Genre; // Tambahin ini biar bisa manggil tabel genre
 use Illuminate\Http\Request;
+use App\Http\Controllers\AdminController;
 
 Route::get('/', function () {
     return view('landing');
@@ -47,5 +48,11 @@ Route::get('/home', function (Request $request) {
 
     return view('home', compact('ceritas', 'genres'));
 })->middleware(['auth'])->name('home');
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    Route::delete('/user/{id}', [AdminController::class, 'destroyUser'])->name('user.destroy');
+    Route::delete('/cerita/{id}', [AdminController::class, 'destroyCerita'])->name('cerita.destroy');
+});
 
 require __DIR__.'/auth.php';
