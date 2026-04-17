@@ -31,7 +31,7 @@
                         <span class="text-2xl font-bold text-[#6C63FF]">AV</span>
                     </div>
 
-                    <h1 class="mb-4 text-4xl font-bold leading-tight">AuStory</h1>
+                    <h1 class="mb-4 text-4xl font-bold leading-tight">AuVerse</h1>
 
                     <p class="text-base leading-8 text-white/95">
                         Masuk ke dunia anime favoritmu. Simpan list tontonan, karakter favorit,
