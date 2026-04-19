@@ -21,7 +21,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'nama_publisher', // <-- Wajib ada biar nggak kena error Mass Assignment
+        'nama_publisher', 
     ];
 
     /**
@@ -58,7 +58,7 @@ class User extends Authenticatable
     // 1 User bisa memfavoritkan banyak Cerita
     public function favorites()
     {
-        // Parameter kedua ('favorites') wajib ditulis karena nama tabel pivotnya bukan bawaan laravel (cerita_user)
-        return $this->belongsToMany(Cerita::class, 'favorites');
+        // WAJIB tambahin ->withTimestamps() biar tanggal simpannya kebaca!
+        return $this->belongsToMany(Cerita::class, 'favorites', 'user_id', 'cerita_id')->withTimestamps();
     }
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - AuStory</title>
+    <title>Home - AuVerse</title>
 
     @vite(['resources/css/app.css'])
 
@@ -35,6 +35,8 @@
                 <a href="{{ route('admin.dashboard') }}" class="font-semibold text-[#241b3d] no-underline hover:text-[#7b4dff]">Dashboard Admin</a>
             @elseif(Auth::user()->role === 'publisher')
                 <a href="{{ route('publisher.index') }}" class="font-semibold text-[#241b3d] no-underline hover:text-[#7b4dff]">Dashboard Publisher</a>
+            @elseif(Auth::user()->role === 'user')
+                <a href="{{ route('user.dashboard') }}" class="font-semibold text-[#241b3d] no-underline hover:text-[#7b4dff]">My Dashboard</a>
             @endif
 
             <form method="POST" action="{{ route('logout') }}" class="m-0">
@@ -92,20 +94,38 @@
         <div class="mx-auto max-w-[1200px] px-6">
             <div class="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                 @forelse($ceritas as $cerita)
-                    <div class="rounded-[24px] border border-[#ddd3fb] bg-white p-5 shadow-sm flex flex-col h-full">
-                        <div class="flex flex-wrap gap-2">
+                    <div class="rounded-[24px] border border-[#ddd3fb] bg-white p-5 shadow-sm flex flex-col h-full relative group">
+                        
+                        <div class="absolute top-4 right-4 z-10">
+                            <form action="{{ route('user.favorite.toggle', $cerita->id) }}" method="POST" class="m-0">
+                                @csrf
+                                <button type="submit" class="flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 shadow-sm 
+                                    {{ Auth::user()->favorites->contains($cerita->id) ? 'bg-red-50 text-red-500 hover:bg-red-100' : 'bg-gray-50 text-gray-400 hover:bg-gray-100' }}">
+                                    @if(Auth::user()->favorites->contains($cerita->id))
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                                        </svg>
+                                    @else
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                        </svg>
+                                    @endif
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 pr-12"> 
                             @foreach($cerita->genres as $genreItem)
                                 <span class="inline-block rounded-full bg-[#efe7ff] px-3 py-1 text-[11px] font-semibold text-[#8b6cff]">
                                     {{ $genreItem->nama_genre }}
                                 </span>
                             @endforeach
                         </div>
-                        <h3 class="mt-3 text-[18px] font-extrabold leading-tight text-[#222222] line-clamp-1">{{ $cerita->judul }}</h3>
+                        <h3 class="mt-3 text-[18px] font-extrabold leading-tight text-[#222222] line-clamp-1 pr-8">{{ $cerita->judul }}</h3>
                         <p class="mt-1 text-[13px] leading-7 text-[#6d6d76] line-clamp-2 flex-grow">
                             {{ $cerita->sinopsis ?? $cerita->isi_cerita }}
                         </p>
-                        <a href="#" class="mt-3 block rounded-xl bg-[#6f42f5] py-3 text-center text-[12px] font-semibold text-white shadow-md">Baca Sekarang</a>
-                    </div>
+                        <a href="{{ route('cerita.baca', $cerita->id) }}" class="mt-3 block rounded-xl bg-[#6f42f5] py-3 text-center text-[12px] font-semibold text-white shadow-md hover:bg-[#5b32d4] transition">Baca Sekarang</a>                    </div>
                 @empty
                     <div class="col-span-full py-12 text-center">
                         <p class="text-[#6d6d76]">Data tidak ditemukan.</p>
