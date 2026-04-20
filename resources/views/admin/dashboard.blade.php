@@ -71,7 +71,7 @@
             
             <div class="flex max-h-[600px] flex-col rounded-3xl border border-[#e6dcff] bg-white p-8 shadow-sm">
                 <div class="mb-6 flex items-center justify-between">
-                    <h2 class="text-xl font-bold text-[#241b3d]">Daftar User Terbaru</h2>
+                    <h2 class="text-xl font-bold text-[#241b3d]">Daftar User</h2>
                 </div>
                 
                 <div class="overflow-y-auto pr-2">
@@ -109,7 +109,7 @@
 
             <div class="flex max-h-[600px] flex-col rounded-3xl border border-[#e6dcff] bg-white p-8 shadow-sm">
                 <div class="mb-6 flex items-center justify-between">
-                    <h2 class="text-xl font-bold text-[#241b3d]">Daftar AU Terbaru</h2>
+                    <h2 class="text-xl font-bold text-[#241b3d]">Daftar AU</h2>
                 </div>
 
                 <div class="overflow-y-auto pr-2">
