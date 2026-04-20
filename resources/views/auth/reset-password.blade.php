@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Password - AuStory</title>
+    <title>Reset Password - AuVerse</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,14 +26,14 @@
 
             <div class="relative z-10 max-w-[420px]">
                 <div class="w-[72px] h-[72px] md:w-[82px] md:h-[82px] rounded-[18px] bg-white text-[#7c4dff] flex items-center justify-center text-[22px] md:text-[26px] font-bold shadow-lg mb-6">
-                    AS
+                    AV
                 </div>
 
-                <h1 class="text-4xl md:text-5xl font-bold mb-4">AuStory</h1>
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">AuVerse</h1>
 
                 <p class="text-white/95 text-base md:text-[17px] leading-8">
-                    Masuk ke dunia anime favoritmu. Simpan list tontonan, karakter favorit,
-                    dan jelajahi vibe comic anime yang seru.
+                    Masuk ke dunia AU favoritmu. Simpan list Bacaan, Au favorit,
+                    dan jelajahi Berbagai AU yang seru.
                 </p>
             </div>
         </div>
