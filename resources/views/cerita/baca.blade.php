@@ -45,6 +45,11 @@
     <section class="w-full bg-[#fbf9ff] px-[6%] py-16 border-b border-[#f0eef5]">
         <div class="mx-auto max-w-[1400px]">
             <h1 class="text-[40px] font-extrabold text-[#241b3d] leading-tight">{{ $cerita->judul }}</h1>
+            
+            <p class="mt-2 text-[15px] font-semibold text-[#7b4dff]">
+                Penulis: {{ $cerita->user->nama_publisher ?? 'Unknown Publisher' }}
+            </p>
+            
             <p class="mt-4 max-w-[700px] text-[15px] leading-relaxed text-[#6d6d76]">
                 {{ $cerita->deskripsi_singkat }}
             </p>
@@ -65,6 +70,11 @@
                 </div>
                 
                 <h2 class="text-[20px] font-extrabold text-[#241b3d] leading-snug">{{ $cerita->judul }}</h2>
+                
+                <p class="mt-1 text-[13px] font-semibold text-[#7b4dff]">
+                    Penulis: {{ $cerita->user->nama_publisher ?? 'Unknown Publisher' }}
+                </p>
+
                 <p class="mt-3 text-[13px] leading-relaxed text-[#6d6d76]">
                     {{ $cerita->deskripsi_singkat }}
                 </p>

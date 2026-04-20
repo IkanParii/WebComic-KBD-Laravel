@@ -121,11 +121,19 @@
                                 </span>
                             @endforeach
                         </div>
+                        
                         <h3 class="mt-3 text-[18px] font-extrabold leading-tight text-[#222222] line-clamp-1 pr-8">{{ $cerita->judul }}</h3>
-                        <p class="mt-1 text-[13px] leading-7 text-[#6d6d76] line-clamp-2 flex-grow">
+                        
+                        <p class="mt-1 text-[13px] font-medium text-[#7b4dff]">
+                            Penulis: {{ $cerita->user->nama_publisher ?? 'Unknown Publisher' }}
+                        </p>
+                        
+                        <p class="mt-2 text-[13px] leading-7 text-[#6d6d76] line-clamp-2 flex-grow">
                             {{ $cerita->sinopsis ?? $cerita->isi_cerita }}
                         </p>
-                        <a href="{{ route('cerita.baca', $cerita->id) }}" class="mt-3 block rounded-xl bg-[#6f42f5] py-3 text-center text-[12px] font-semibold text-white shadow-md hover:bg-[#5b32d4] transition">Baca Sekarang</a>                    </div>
+                        
+                        <a href="{{ route('cerita.baca', $cerita->id) }}" class="mt-3 block rounded-xl bg-[#6f42f5] py-3 text-center text-[12px] font-semibold text-white shadow-md hover:bg-[#5b32d4] transition">Baca Sekarang</a>
+                    </div>
                 @empty
                     <div class="col-span-full py-12 text-center">
                         <p class="text-[#6d6d76]">Data tidak ditemukan.</p>
