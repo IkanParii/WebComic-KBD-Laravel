@@ -34,8 +34,8 @@
                     <h1 class="mb-4 text-4xl font-bold leading-tight">AuVerse</h1>
 
                     <p class="text-base leading-8 text-white/95">
-                        Masuk ke dunia anime favoritmu. Simpan list tontonan, karakter favorit,
-                        dan jelajahi vibe comic anime yang seru.
+                        Masuk ke dunia AU favoritmu. Simpan cerita kesukaanmu, AU favorit, 
+                        dan jelajahi pengalaman membaca yang lebih seru dan imajinatif.
                     </p>
                 </div>
             </div>
@@ -44,7 +44,7 @@
             <div class="flex items-center justify-center bg-[#fcfcfd] px-6 py-10 sm:px-10 lg:px-12">
                 <div class="w-full max-w-md">
                     <h2 class="text-4xl font-bold text-[#1f1f1f]">Login</h2>
-                    <p class="mt-2 mb-8 text-sm text-gray-500">Welcome back, senpai</p>
+                    <p class="mt-2 mb-8 text-sm text-gray-500">Welcome back, Reader</p>
 
                     @if (session('success'))
                         <div class="mb-4 rounded-xl bg-green-100 px-4 py-3 text-sm text-green-700">
