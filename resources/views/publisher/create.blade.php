@@ -12,10 +12,10 @@
 
     <aside class="w-64 bg-[#7B4DFF] text-white flex flex-col pt-8">
         <div class="px-6 flex items-center gap-3 mb-12">
-            <div class="w-10 h-10 bg-white rounded-full flex justify-center items-center text-[#7B4DFF] font-bold">AS</div>
+            <div class="w-10 h-10 bg-white rounded-full flex justify-center items-center text-[#7B4DFF] font-bold">AV</div>
             <div>
                 <h1 class="font-bold text-lg leading-tight">AuVerse</h1>
-                <p class="text-[10px] text-[#e6dcff]">Admin Panel</p>
+                <p class="text-[10px] text-[#e6dcff]">Publisher Panel</p>
             </div>
         </div>
         <nav class="flex flex-col gap-3 px-4">
