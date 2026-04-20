@@ -33,15 +33,6 @@
                 Back to Site
             </a>
         </nav>
-
-        <div class="mt-auto px-6 pb-8">
-            <form method="POST" action="{{ route('logout') }}" class="m-0">
-                @csrf
-                <button type="submit" class="w-full text-left px-6 py-4 rounded-[14px] font-semibold text-[14px] text-white/70 transition hover:bg-red-500/20 hover:text-white">
-                    Logout
-                </button>
-            </form>
-        </div>
     </aside>
 
     <main class="flex-1 ml-[280px] p-10 lg:p-14">
