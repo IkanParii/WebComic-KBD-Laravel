@@ -33,7 +33,6 @@
         </div>
 
         <nav class="flex flex-wrap items-center gap-[18px]">
-            <a href="#home" class="font-semibold text-[#241b3d] no-underline">Home</a>
             <a href="#feature" class="font-semibold text-[#241b3d] no-underline">Features</a>
             <a href="#about" class="font-semibold text-[#241b3d] no-underline">About</a>
             <a href="{{ route('login') }}" class="inline-flex items-center justify-center rounded-2xl border-2 border-[#e6dcff] bg-white px-5 py-3.5 font-bold text-[#7b4dff] transition duration-200">
@@ -71,10 +70,6 @@
                         Daftar Sekarang
                     </a>
 
-                    <a href="{{ route('login') }}"
-                       class="rounded-[20px] border border-[#d6cfff] bg-[#f7f5ff] px-10 py-4 text-[16px] font-semibold text-[#7B61FF] shadow-[0_8px_20px_rgba(123,97,255,0.18)] transition hover:scale-[1.02]">
-                        Login
-                    </a>
                 </div>
             </div>
         </div>
@@ -121,7 +116,7 @@
             <div class="text-center">
                 <h2 class="text-[32px] font-extrabold text-[#222222] md:text-[48px]">Kenapa AuVerse?</h2>
                 <p class="mt-2 text-[15px] text-[#7b7b87] md:text-[20px]">
-                    Platform yang simple, fun, dan punya vibe anime banget.
+                    Platform yang simple, fun, dan punya banyak cerita menarik.
                 </p>
             </div>
 
@@ -134,9 +129,9 @@
                 </div>
 
                 <div class="rounded-[24px] border border-[#ddd3fb] bg-white px-6 py-7 shadow-[0_8px_18px_rgba(123,97,255,0.16)]">
-                    <h3 class="text-[18px] font-bold text-[#1f1f1f]">Mudah Digunakan</h3>
+                    <h3 class="text-[18px] font-bold text-[#1f1f1f]">Privasi Terjaga</h3>
                     <p class="mt-4 text-[14px] font-medium leading-7 text-[#5f5f69]">
-                        Navigasi sederhana dan cocok untuk usia 17-21 yang suka tampilan modern tapi tetap ringan
+                        Privasi Anda adalah prioritas kami. Kami menjaga data pribadi Anda tetap aman, terlindungi, dan hanya digunakan untuk meningkatkan pengalaman di website ini.
                     </p>
                 </div>
 
