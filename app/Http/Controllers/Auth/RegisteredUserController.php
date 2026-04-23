@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Illuminate\Validation\Rules\Password;
 
 class RegisteredUserController extends Controller
 {
@@ -34,7 +35,7 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             // Pastikan password ini sesuai (pakai confirmed kalau lo pake input konfirmasi di form)
-            'password' => ['required', 'confirmed', 'min:8'], 
+            'password' => ['required', 'confirmed', Password::defaults()], 
             'role' => ['required', 'in:user,publisher'],
             'nama_publisher' => ['required_if:role,publisher', 'nullable', 'string', 'max:255'],
         ], [

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - AuVerse</title>
-    @vite('resources/css/app.css')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>body { font-family: 'Poppins', sans-serif; }</style>
 </head>
@@ -30,10 +30,7 @@
             <a href="{{ route('home') }}" class="rounded-xl px-5 py-3 text-sm font-semibold text-white/70 transition hover:bg-white/10 hover:text-white">
                 Back to Site
             </a>
-            
         </nav>
-
-        
     </aside>
 
     <main class="ml-[260px] flex-1 px-10 py-10">
@@ -44,8 +41,14 @@
         </div>
 
         @if(session('success'))
-            <div class="mb-6 rounded-xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-semibold text-green-600">
+            <div class="mb-6 rounded-xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-semibold text-green-600 shadow-sm">
                 {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-semibold text-red-600 shadow-sm">
+                {{ session('error') }}
             </div>
         @endif
 
@@ -96,7 +99,9 @@
                                     </span>
                                 </td>
                                 <td class="py-4 text-right">
-                                    <button type="button" onclick="bukaPopup(`{{ route('admin.user.destroy', $user->id) }}`, `User: {{ $user->name }}`)" class="font-bold text-red-500 transition hover:text-red-700">Hapus</button>
+                                    <button type="button" onclick="bukaPopupEdit(`{{ route('admin.user.update', $user->id) }}`, `{{ $user->name }}`)" class="mr-3 font-bold text-[#7b4dff] transition hover:text-[#5c37bf]">Edit</button>
+                                    
+                                    <button type="button" onclick="bukaPopupHapus(`{{ route('admin.user.destroy', $user->id) }}`, `User: {{ $user->name }}`)" class="font-bold text-red-500 transition hover:text-red-700">Hapus</button>
                                 </td>
                             </tr>
                             @empty
@@ -128,7 +133,7 @@
                                     <p class="text-xs text-gray-500">Dibuat: {{ $cerita->created_at->format('d M Y') }}</p>
                                 </td>
                                 <td class="py-4 text-right">
-                                    <button type="button" onclick="bukaPopup(`{{ route('admin.cerita.destroy', $cerita->id) }}`, `Komik: {{ $cerita->judul }}`)" class="font-bold text-red-500 transition hover:text-red-700">Hapus</button>
+                                    <button type="button" onclick="bukaPopupHapus(`{{ route('admin.cerita.destroy', $cerita->id) }}`, `Komik: {{ $cerita->judul }}`)" class="font-bold text-red-500 transition hover:text-red-700">Hapus</button>
                                 </td>
                             </tr>
                             @empty
@@ -154,7 +159,7 @@
             </p>
 
             <div class="flex gap-4">
-                <button type="button" onclick="tutupPopup()" class="w-full rounded-xl border border-gray-300 bg-white py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
+                <button type="button" onclick="tutupPopupHapus()" class="w-full rounded-xl border border-gray-300 bg-white py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
                     Batal
                 </button>
                 
@@ -169,40 +174,100 @@
         </div>
     </div>
 
+    <div id="popupEdit" class="fixed inset-0 z-50 hidden items-center justify-center bg-[#241b3d]/40 px-4 backdrop-blur-sm transition-opacity duration-300">
+        <div class="w-full max-w-md scale-95 transform rounded-3xl bg-white p-8 shadow-2xl transition-transform duration-300">
+            <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#efe7ff] text-3xl">
+                ✏️
+            </div>
+            
+            <h3 class="mb-2 text-center text-xl font-bold text-[#241b3d]">Edit Username</h3>
+            <p class="mb-6 text-center text-sm text-[#6f6f79]">
+                Ubah paksa nama user yang melanggar aturan.
+            </p>
+
+            <form id="formEdit" method="POST" class="m-0">
+                @csrf 
+                @method('PUT')
+                
+                <div class="mb-8">
+                    <label for="inputNamaEdit" class="mb-2 block text-sm font-medium text-gray-700">Nama Lengkap</label>
+                    <input type="text" id="inputNamaEdit" name="name" required class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-[#7b4dff] focus:outline-none focus:ring-2 focus:ring-[#7b4dff]/20">
+                </div>
+
+                <div class="flex gap-4">
+                    <button type="button" onclick="tutupPopupEdit()" class="w-full rounded-xl border border-gray-300 bg-white py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
+                        Batal
+                    </button>
+                    
+                    <button type="submit" class="w-full rounded-xl bg-[#7b4dff] py-3 text-sm font-bold text-white transition hover:bg-[#5c37bf] shadow-md shadow-[#7b4dff]/30">
+                        Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </div>
 
 <script>
-    const popup = document.getElementById('popupHapus');
+    // JS BUAT POPUP HAPUS
+    const popupHapus = document.getElementById('popupHapus');
     const formHapus = document.getElementById('formHapus');
     const namaData = document.getElementById('namaDataDihapus');
 
-    function bukaPopup(urlAction, namaItem) {
-        // Ganti URL tujuan form sesuai data yang dipencet
+    function bukaPopupHapus(urlAction, namaItem) {
         formHapus.action = urlAction;
-        // Tunjukin nama item yang mau dihapus di dalem teks popup
         namaData.innerText = namaItem;
         
-        // Tunjukin popupnya
-        popup.classList.remove('hidden');
-        popup.classList.add('flex');
+        popupHapus.classList.remove('hidden');
+        popupHapus.classList.add('flex');
         
-        // Animasi pop-in dikit biar smooth
         setTimeout(() => {
-            popup.children[0].classList.remove('scale-95');
-            popup.children[0].classList.add('scale-100');
+            popupHapus.children[0].classList.remove('scale-95');
+            popupHapus.children[0].classList.add('scale-100');
         }, 10);
     }
 
-    function tutupPopup() {
-        // Animasi pop-out
-        popup.children[0].classList.remove('scale-100');
-        popup.children[0].classList.add('scale-95');
+    function tutupPopupHapus() {
+        popupHapus.children[0].classList.remove('scale-100');
+        popupHapus.children[0].classList.add('scale-95');
         
-        // Sembunyiin popupnya
         setTimeout(() => {
-            popup.classList.add('hidden');
-            popup.classList.remove('flex');
-        }, 200); // Nunggu animasi kelar bentar
+            popupHapus.classList.add('hidden');
+            popupHapus.classList.remove('flex');
+        }, 200); 
+    }
+
+    // JS BUAT POPUP EDIT NAMA
+    const popupEdit = document.getElementById('popupEdit');
+    const formEdit = document.getElementById('formEdit');
+    const inputNamaEdit = document.getElementById('inputNamaEdit');
+
+    function bukaPopupEdit(urlAction, namaSekarang) {
+        // Tembak URL formnya
+        formEdit.action = urlAction;
+        
+        // Masukin nama sekarang ke dalem input biar gampang ngeditnya
+        inputNamaEdit.value = namaSekarang;
+        
+        // Tunjukin popup
+        popupEdit.classList.remove('hidden');
+        popupEdit.classList.add('flex');
+        
+        setTimeout(() => {
+            popupEdit.children[0].classList.remove('scale-95');
+            popupEdit.children[0].classList.add('scale-100');
+        }, 10);
+    }
+
+    function tutupPopupEdit() {
+        popupEdit.children[0].classList.remove('scale-100');
+        popupEdit.children[0].classList.add('scale-95');
+        
+        setTimeout(() => {
+            popupEdit.classList.add('hidden');
+            popupEdit.classList.remove('flex');
+        }, 200); 
     }
 </script>
 
