@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+// 👇 INI YANG GW TAMBAHIN BROW 👇
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
@@ -60,5 +61,10 @@ class User extends Authenticatable
     {
         // WAJIB tambahin ->withTimestamps() biar tanggal simpannya kebaca!
         return $this->belongsToMany(Cerita::class, 'favorites', 'user_id', 'cerita_id')->withTimestamps();
+    }
+
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new \App\Notifications\CustomVerifyEmail);
     }
 }

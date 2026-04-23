@@ -21,7 +21,6 @@
     <div class="w-full max-w-5xl overflow-hidden rounded-[30px] border border-[#d9cfff] bg-white shadow-sm">
         <div class="grid min-h-[620px] md:grid-cols-2">
 
-            <!-- Left Section -->
             <div class="relative hidden md:block bg-gradient-to-br from-[#7B4DFF] to-[#6C63FF] p-8 lg:p-10 overflow-hidden">
                 <div class="absolute top-0 right-0 h-40 w-40 rounded-full bg-white/10 translate-x-8 -translate-y-4"></div>
                 <div class="absolute bottom-0 left-0 h-24 w-24 rounded-full bg-white/10 -translate-x-4 translate-y-4"></div>
@@ -40,7 +39,6 @@
                 </div>
             </div>
 
-            <!-- Right Section -->
             <div class="flex items-center justify-center bg-[#fcfcfd] px-6 py-6 sm:px-8">
                 <div class="w-full max-w-md">
                     <h2 class="text-3xl font-bold text-[#1f1f1f]">Register</h2>
@@ -65,7 +63,6 @@
                     <form method="POST" action="{{ route('register') }}" class="space-y-3">
                         @csrf
 
-                        <!-- Role -->
                         <div class="text-center">
                             <p class="mb-2 text-sm font-medium text-[#111111]">Daftar Sebagai</p>
 
@@ -100,7 +97,6 @@
                             </div>
                         </div>
 
-                        <!-- Username -->
                         <div>
                             <label for="name" class="mb-1.5 block text-sm font-semibold text-[#262626]">
                                 Username
@@ -116,7 +112,6 @@
                             >
                         </div>
 
-                        <!-- Publisher Name -->
                         <div id="publisher-field-wrapper" class="hidden">
                             <label for="publisher_name" class="mb-1.5 block text-sm font-semibold text-[#262626]">
                                 Nama Publisher
@@ -131,7 +126,6 @@
                             >
                         </div>
 
-                        <!-- Email -->
                         <div>
                             <label for="email" class="mb-1.5 block text-sm font-semibold text-[#262626]">
                                 Email
@@ -147,7 +141,6 @@
                             >
                         </div>
 
-                        <!-- Password -->
                         <div>
                             <label for="password" class="mb-1.5 block text-sm font-semibold text-[#262626]">
                                 Password
@@ -185,9 +178,28 @@
                                     </svg>
                                 </button>
                             </div>
-                        </div>
 
-                        <!-- Konfirmasi Password -->
+                            <div id="password-strength-container" class="hidden mt-3 transition-all duration-300">
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <span class="text-xs font-medium text-gray-500">Kekuatan Password:</span>
+                                    <span id="strength-text" class="text-xs font-bold text-gray-400">Belum diisi</span>
+                                </div>
+                                <div class="h-1.5 w-full rounded-full bg-gray-200 overflow-hidden flex gap-1">
+                                    <div id="bar-1" class="h-full w-1/4 bg-gray-200 transition-colors duration-300 rounded-full"></div>
+                                    <div id="bar-2" class="h-full w-1/4 bg-gray-200 transition-colors duration-300 rounded-full"></div>
+                                    <div id="bar-3" class="h-full w-1/4 bg-gray-200 transition-colors duration-300 rounded-full"></div>
+                                    <div id="bar-4" class="h-full w-1/4 bg-gray-200 transition-colors duration-300 rounded-full"></div>
+                                </div>
+                                
+                                <ul class="mt-2 grid grid-cols-2 gap-1 text-[11px] text-gray-500">
+                                    <li id="req-length" class="flex items-center gap-1 transition-colors"><span class="text-lg leading-none">&bull;</span> Min 8 karakter</li>
+                                    <li id="req-upper" class="flex items-center gap-1 transition-colors"><span class="text-lg leading-none">&bull;</span> Huruf kapital</li>
+                                    <li id="req-lower" class="flex items-center gap-1 transition-colors"><span class="text-lg leading-none">&bull;</span> Huruf kecil</li>
+                                    <li id="req-symbol" class="flex items-center gap-1 transition-colors"><span class="text-lg leading-none">&bull;</span> Angka / Simbol</li>
+                                </ul>
+                            </div>
+                            </div>
+
                         <div>
                             <label for="password_confirmation" class="mb-1.5 block text-sm font-semibold text-[#262626]">
                                 Konfirmasi Password
@@ -227,16 +239,15 @@
                             </div>
                         </div>
 
-                        <!-- Button -->
                         <button
                             type="submit"
-                            class="h-11 w-full rounded-xl bg-gradient-to-r from-[#7B4DFF] to-[#6C63FF] text-sm font-semibold text-white shadow-lg shadow-[#7B4DFF]/30 transition hover:opacity-95"
+                            id="btn-submit"
+                            class="h-11 w-full mt-2 rounded-xl bg-gradient-to-r from-[#7B4DFF] to-[#6C63FF] text-sm font-semibold text-white shadow-lg shadow-[#7B4DFF]/30 transition hover:opacity-95"
                         >
                             Daftar Sekarang
                         </button>
 
-                        <!-- Login -->
-                        <p class="text-center text-sm text-gray-500">
+                        <p class="text-center text-sm text-gray-500 mt-2">
                             Sudah punya akun ?
                             <a href="{{ route('login') }}" class="font-medium text-[#7B4DFF] hover:underline">
                                 Login di sini
@@ -281,8 +292,81 @@
             }
         }
 
+        // 👇 TAMBAHAN LOGIC PASSWORD STRENGTH 👇
+        function checkPasswordStrength() {
+            const password = document.getElementById('password').value;
+            const container = document.getElementById('password-strength-container');
+            const strengthText = document.getElementById('strength-text');
+            const bars = [
+                document.getElementById('bar-1'),
+                document.getElementById('bar-2'),
+                document.getElementById('bar-3'),
+                document.getElementById('bar-4')
+            ];
+
+            // Tampilkan container kalau mulai ngetik
+            if (password.length > 0) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+
+            // Kriteria persis dengan backend lo (Global Password Policy)
+            const criteria = {
+                length: password.length >= 8,
+                upper: /[A-Z]/.test(password),
+                lower: /[a-z]/.test(password),
+                symbol: /[\W_0-9]/.test(password) // Angka atau Spesial Karakter
+            };
+
+            // Update UI Checklist
+            document.getElementById('req-length').className = `flex items-center gap-1 transition-colors ${criteria.length ? 'text-[#05c46b] font-medium' : 'text-gray-500'}`;
+            document.getElementById('req-upper').className = `flex items-center gap-1 transition-colors ${criteria.upper ? 'text-[#05c46b] font-medium' : 'text-gray-500'}`;
+            document.getElementById('req-lower').className = `flex items-center gap-1 transition-colors ${criteria.lower ? 'text-[#05c46b] font-medium' : 'text-gray-500'}`;
+            document.getElementById('req-symbol').className = `flex items-center gap-1 transition-colors ${criteria.symbol ? 'text-[#05c46b] font-medium' : 'text-gray-500'}`;
+
+            // Hitung Score (0 sampai 4)
+            let score = 0;
+            if (criteria.length) score++;
+            if (criteria.upper) score++;
+            if (criteria.lower) score++;
+            if (criteria.symbol) score++;
+
+            // Reset warna bar
+            bars.forEach(bar => bar.className = 'h-full w-1/4 bg-gray-200 transition-colors duration-300 rounded-full');
+
+            // Logika Warna dan Teks
+            if (password.length === 0) {
+                strengthText.textContent = 'Belum diisi';
+                strengthText.className = 'text-xs font-bold text-gray-400';
+            } else if (score === 1) {
+                strengthText.textContent = 'Sangat Lemah';
+                strengthText.className = 'text-xs font-bold text-[#ff3f34]';
+                bars[0].classList.replace('bg-gray-200', 'bg-[#ff3f34]');
+            } else if (score === 2) {
+                strengthText.textContent = 'Lemah';
+                strengthText.className = 'text-xs font-bold text-[#ffb8b8]';
+                bars[0].classList.replace('bg-gray-200', 'bg-[#ffb8b8]');
+                bars[1].classList.replace('bg-gray-200', 'bg-[#ffb8b8]');
+            } else if (score === 3) {
+                strengthText.textContent = 'Lumayan';
+                strengthText.className = 'text-xs font-bold text-[#ffa801]';
+                bars[0].classList.replace('bg-gray-200', 'bg-[#ffa801]');
+                bars[1].classList.replace('bg-gray-200', 'bg-[#ffa801]');
+                bars[2].classList.replace('bg-gray-200', 'bg-[#ffa801]');
+            } else if (score === 4) {
+                strengthText.textContent = 'Sangat Kuat!';
+                strengthText.className = 'text-xs font-bold text-[#05c46b]';
+                bars.forEach(bar => bar.classList.replace('bg-gray-200', 'bg-[#05c46b]'));
+            }
+        }
+        // 👆 AKHIR TAMBAHAN LOGIC 👆
+
         document.addEventListener('DOMContentLoaded', function () {
             togglePublisherField();
+            
+            // Pasang event listener biar meternya jalan tiap kali user ngetik
+            document.getElementById('password').addEventListener('input', checkPasswordStrength);
         });
     </script>
 </body>

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Cerita; // <-- Wajib ada biar Laravel tau tabel cerita
+use App\Models\Cerita; 
 
 class UserController extends Controller
 {
@@ -25,12 +25,17 @@ class UserController extends Controller
     // 2. Fungsi buat nambah/ngapus favorit (Toggle)
     public function toggleFavorite($id)
     {
+        // --- SECURITY TWEAK ---
+        // Cek dulu, ceritanya beneran ada nggak di database?
+        // Kalau ngga ada, otomatis dilempar ke halaman 404 (aman dari error 500)
+        $cerita = Cerita::findOrFail($id);
+
         /** @var \App\Models\User $user */
         $user = Auth::user();
         
         // Fungsi toggle() bawaan Laravel: 
         // Kalau belum ada -> ditambah. Kalau udah ada -> dihapus.
-        $user->favorites()->toggle($id);
+        $user->favorites()->toggle($cerita->id);
 
         return back()->with('success', 'Koleksi favorit lo berhasil diupdate!');
     }

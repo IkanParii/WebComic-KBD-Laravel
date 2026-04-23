@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password; 
+use Illuminate\Auth\Notifications\ResetPassword; 
+use Illuminate\Notifications\Messages\MailMessage; 
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +22,28 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // --- KEAMANAN PASSWORD AUVERSE ---
+        Password::defaults(function () {
+            return Password::min(8)       // Minimal 8 karakter
+                ->letters()               // Wajib ada huruf
+                ->mixedCase()             // Wajib ada huruf BESAR dan kecil
+                ->symbols();              // Wajib ada simbol (@, #, !, dll)
+        }); // <--- Tadi lo lupa nutup di sini brow!
+
+        // --- CUSTOM EMAIL RESET PASSWORD ---
+        ResetPassword::toMailUsing(function (object $notifiable, string $token) {
+            // Generate link reset bawaan Laravel
+            $url = url(route('password.reset', [
+                'token' => $token,
+                'email' => $notifiable->getEmailForPasswordReset(),
+            ], false));
+
+            return (new MailMessage)
+                ->subject('Reset Password Akun AuVerse')
+                ->view('emails.reset-password', [
+                    'url' => $url,
+                    'user' => $notifiable
+                ]);
+        });
     }
 }
