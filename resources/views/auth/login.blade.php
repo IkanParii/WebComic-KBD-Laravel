@@ -11,6 +11,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -21,7 +23,6 @@
     <div class="w-full max-w-5xl overflow-hidden rounded-[30px] border border-[#d9cfff] bg-white shadow-sm">
         <div class="grid min-h-[620px] md:grid-cols-2">
             
-            <!-- Left Section -->
             <div class="relative hidden md:block bg-gradient-to-br from-[#7B4DFF] to-[#6C63FF] p-10 lg:p-14 overflow-hidden">
                 <div class="absolute top-0 right-0 h-44 w-44 rounded-full bg-white/10 translate-x-10 -translate-y-6"></div>
                 <div class="absolute bottom-0 left-0 h-28 w-28 rounded-full bg-white/10 -translate-x-6 translate-y-6"></div>
@@ -40,7 +41,6 @@
                 </div>
             </div>
 
-            <!-- Right Section -->
             <div class="flex items-center justify-center bg-[#fcfcfd] px-6 py-10 sm:px-10 lg:px-12">
                 <div class="w-full max-w-md">
                     <h2 class="text-4xl font-bold text-[#1f1f1f]">Login</h2>
@@ -65,7 +65,6 @@
                     <form action="{{ route('login') }}" method="POST" class="space-y-5">
                         @csrf
 
-                        <!-- Email -->
                         <div>
                             <label for="email" class="mb-2 block text-sm font-semibold text-[#262626]">
                                 Email
@@ -82,7 +81,6 @@
                             >
                         </div>
 
-                        <!-- Password -->
                         <div>
                             <label for="password" class="mb-2 block text-sm font-semibold text-[#262626]">
                                 Password
@@ -122,7 +120,6 @@
                             </div>
                         </div>
 
-                        <!-- Remember / Forgot -->
                         <div class="flex items-center justify-between text-sm">
                             <label class="flex items-center gap-2 text-gray-500">
                                 <input
@@ -140,7 +137,10 @@
                             @endif
                         </div>
 
-                        <!-- Button -->
+                        <div class="flex justify-center my-4">
+                            <div class="cf-turnstile" data-sitekey="{{ env('TURNSTILE_SITE_KEY') }}"data-theme="light"></div>
+                        </div>
+
                         <button
                             type="submit"
                             class="h-14 w-full rounded-2xl bg-gradient-to-r from-[#7B4DFF] to-[#6C63FF] text-sm font-semibold text-white shadow-lg shadow-[#7B4DFF]/30 transition hover:opacity-95"
@@ -148,7 +148,6 @@
                             Masuk Sekarang
                         </button>
 
-                        <!-- Register -->
                         <p class="text-center text-sm text-gray-500">
                             Belum punya akun ?
                             <a href="{{ route('register') }}" class="font-medium text-[#7B4DFF] hover:underline">
