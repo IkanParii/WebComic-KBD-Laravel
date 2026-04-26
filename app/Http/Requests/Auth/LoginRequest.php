@@ -6,9 +6,11 @@ use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http; // 👈 Udah gw tambahin Http Facade di sini
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 
 class LoginRequest extends FormRequest
 {
@@ -30,6 +32,18 @@ class LoginRequest extends FormRequest
         return [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            // 👇 Udah gw ganti pakai custom request langsung ke API Cloudflare
+            'cf-turnstile-response' => ['required', function ($attribute, $value, $fail) {
+                $response = Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+                    'secret' => env('TURNSTILE_SECRET_KEY'),
+                    'response' => $value,
+                    'remoteip' => request()->ip(),
+                ]);
+
+                if (! $response->json('success')) {
+                    $fail('Verifikasi Captcha gagal. Silakan muat ulang halaman dan coba lagi.');
+                }
+            }],
         ];
     }
 
