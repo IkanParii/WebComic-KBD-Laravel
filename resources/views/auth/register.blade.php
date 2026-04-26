@@ -118,7 +118,7 @@
                             </label>
                             <input
                                 id="publisher_name"
-                                name="publisher_name"
+                                name="nama_publisher"
                                 type="text"
                                 value="{{ old('publisher_name') }}"
                                 placeholder="Masukkan nama publisher"
