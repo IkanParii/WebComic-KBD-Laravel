@@ -23,9 +23,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (config('app.env') !== 'local') {
-            URL::forceScheme('https');
-        }
+        // if (config('app.env') !== 'local') {
+        //     URL::forceScheme('https');
+        // }
         // --- KEAMANAN PASSWORD AUVERSE ---
         Password::defaults(function () {
             return Password::min(8)       // Minimal 8 karakter
