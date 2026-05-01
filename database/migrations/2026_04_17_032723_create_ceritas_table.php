@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('ceritas', function (Blueprint $table) {
             $table->id();
-            $table->string('judul');
+            // 👇 Tinggal tambahin ->unique() di ujungnya sini brow
+            $table->string('judul')->unique();
             $table->text('deskripsi_singkat');
             $table->longText('isi_cerita');
             // Foreign key ke tabel users (publisher)
