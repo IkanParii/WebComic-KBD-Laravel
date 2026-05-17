@@ -30,7 +30,7 @@ class RegisteredUserController extends Controller
             'nama_publisher' => ['required_if:role,publisher', 'nullable', 'string', 'max:255'],
             'g-recaptcha-response' => ['required', function ($attribute, $value, $fail) {
                 $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-                    'secret' => env('GOOGLE_RECAPTCHA_SECRET_KEY', env('RECAPTCHA_SECRET_KEY')),
+                    'secret' => config('services.recaptcha.secret_key'),
                     'response' => $value,
                     'remoteip' => request()->ip(),
                 ]);

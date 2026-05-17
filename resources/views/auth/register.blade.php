@@ -239,7 +239,7 @@
                             </div>
                         </div>
                             <div class="flex justify-center my-4">
-                                <div class="g-recaptcha" data-sitekey="{{ env('GOOGLE_RECAPTCHA_SITE_KEY', env('RECAPTCHA_SITE_KEY')) }}" data-theme="light"></div>
+                                <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}" data-theme="light"></div>
                             </div>
                         <button
                             type="submit"
