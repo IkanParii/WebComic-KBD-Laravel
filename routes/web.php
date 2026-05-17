@@ -32,7 +32,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // --- RUTE PUBLISHER ---
-Route::middleware(['auth', 'verified', 'publisher'])->prefix('publisher')->name('publisher.')->group(function () {
+Route::middleware(['auth', 'verified', 'publisher.otp', 'publisher'])->prefix('publisher')->name('publisher.')->group(function () {
     Route::get('/daftar-cerita', [PublisherController::class, 'index'])->name('index');
     Route::get('/tambah-cerita', [PublisherController::class, 'create'])->name('create');
     

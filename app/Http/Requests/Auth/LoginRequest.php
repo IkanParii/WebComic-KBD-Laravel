@@ -2,29 +2,25 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http; // 👈 Udah gw tambahin Http Facade di sini
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Validation\Rule;
 
 class LoginRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
@@ -32,24 +28,21 @@ class LoginRequest extends FormRequest
         return [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
-            // 👇 Udah gw ganti pakai custom request langsung ke API Cloudflare
-            'cf-turnstile-response' => ['required', function ($attribute, $value, $fail) {
-                $response = Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
-                    'secret' => env('TURNSTILE_SECRET_KEY'),
+            'g-recaptcha-response' => ['required', function ($attribute, $value, $fail) {
+                $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                    'secret' => env('GOOGLE_RECAPTCHA_SECRET_KEY', env('RECAPTCHA_SECRET_KEY')),
                     'response' => $value,
                     'remoteip' => request()->ip(),
                 ]);
 
                 if (! $response->json('success')) {
-                    $fail('Verifikasi Captcha gagal. Silakan muat ulang halaman dan coba lagi.');
+                    $fail('Verifikasi reCAPTCHA gagal. Silakan muat ulang halaman dan coba lagi.');
                 }
             }],
         ];
     }
 
     /**
-     * Attempt to authenticate the request's credentials.
-     *
      * @throws ValidationException
      */
     public function authenticate(): void
@@ -68,8 +61,28 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Ensure the login request is not rate limited.
-     *
+     * @throws ValidationException
+     */
+    public function getAuthenticatedUser(): User
+    {
+        $this->ensureIsNotRateLimited();
+
+        $user = User::where('email', $this->string('email'))->first();
+
+        if (! $user || ! Hash::check($this->string('password'), $user->password)) {
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'email' => trans('auth.failed'),
+            ]);
+        }
+
+        RateLimiter::clear($this->throttleKey());
+
+        return $user;
+    }
+
+    /**
      * @throws ValidationException
      */
     public function ensureIsNotRateLimited(): void
@@ -90,9 +103,6 @@ class LoginRequest extends FormRequest
         ]);
     }
 
-    /**
-     * Get the rate limiting throttle key for the request.
-     */
     public function throttleKey(): string
     {
         return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
