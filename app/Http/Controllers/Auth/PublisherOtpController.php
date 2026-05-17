@@ -67,12 +67,19 @@ class PublisherOtpController extends Controller
         }
 
         $otp = (string) random_int(100000, 999999);
+        $expiresAt = now()->addMinutes(10);
+
         $user->update([
             'publisher_otp_code' => $otp,
-            'publisher_otp_expires_at' => now()->addMinutes(10),
+            'publisher_otp_expires_at' => $expiresAt,
         ]);
 
-        Mail::raw("Kode OTP login Publisher Anda: {$otp}. Berlaku sampai 10 menit.", function ($message) use ($user) {
+        Mail::send('emails.publisher-otp', [
+            'name' => $user->name,
+            'otp' => $otp,
+            'expiresAt' => $expiresAt->format('d M Y H:i'),
+            'timezone' => config('app.timezone', 'UTC'),
+        ], function ($message) use ($user) {
             $message->to($user->email)->subject('OTP Login Publisher');
         });
 
