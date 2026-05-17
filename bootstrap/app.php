@@ -1,5 +1,7 @@
 <?php
 use App\Http\Middleware\CheckPublisher;
+use App\Http\Middleware\EnsurePublisherOtpVerified;
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -11,14 +13,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-    $middleware->trustProxies(at: '*');
-    $middleware->alias([
+        $middleware->trustProxies(at: '*');
+        $middleware->web(append: [
+            SecurityHeaders::class,
+        ]);
+        $middleware->alias([
             'publisher' => CheckPublisher::class,
+            'publisher.otp' => EnsurePublisherOtpVerified::class,
             'admin'     => \App\Http\Middleware\AdminMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
-
-    

@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\PublisherOtpController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
@@ -15,21 +16,27 @@ Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 
-    // 🔥 THROTTLE REGISTER: Maks 5x coba per menit (Cegah bot bikin akun spam)
     Route::post('register', [RegisteredUserController::class, 'store'])
         ->middleware('throttle:5,1');
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
 
-    // 🔥 THROTTLE LOGIN: Maks 5x coba per menit (Cegah hacker nebak password)
     Route::post('login', [AuthenticatedSessionController::class, 'store'])
         ->middleware('throttle:5,1');
+
+    Route::get('publisher/otp', [PublisherOtpController::class, 'create'])
+        ->name('publisher.otp.form');
+    Route::post('publisher/otp', [PublisherOtpController::class, 'store'])
+        ->middleware('throttle:5,1')
+        ->name('publisher.otp.verify');
+    Route::post('publisher/otp/resend', [PublisherOtpController::class, 'resend'])
+        ->middleware('throttle:3,1')
+        ->name('publisher.otp.resend');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
 
-    // 🔥 THROTTLE FORGOT PASSWORD: Maks 3x per menit (Cegah spam email reset ke inbox orang)
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
         ->middleware('throttle:3,1')
         ->name('password.email');
