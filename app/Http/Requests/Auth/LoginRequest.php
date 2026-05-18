@@ -2,14 +2,14 @@
 
 namespace App\Http\Requests\Auth;
 
-use App\Support\ActivityLogger;
 use App\Models\User;
+use App\Support\ActivityLogger;
+use App\Support\ManualCaptcha;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -29,15 +29,11 @@ class LoginRequest extends FormRequest
         return [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
-            'g-recaptcha-response' => ['required', function ($attribute, $value, $fail) {
-                $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-                    'secret' => config('services.recaptcha.secret_key'),
-                    'response' => $value,
-                    'remoteip' => request()->ip(),
-                ]);
+            'captcha_answer' => ['required', 'string', function ($attribute, $value, $fail) {
+                $answer = (string) $this->session()->get('manual_captcha.login.answer', '');
 
-                if (! $response->json('success')) {
-                    $fail('Verifikasi reCAPTCHA gagal. Silakan muat ulang halaman dan coba lagi.');
+                if ($answer === '' || trim((string) $value) !== $answer) {
+                    $fail('Jawaban CAPTCHA salah. Coba lagi.');
                 }
             }],
         ];
@@ -84,6 +80,8 @@ class LoginRequest extends FormRequest
                 'guest'
             );
 
+            ManualCaptcha::generate($this, 'login');
+
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
@@ -122,6 +120,8 @@ class LoginRequest extends FormRequest
 
             RateLimiter::hit($lockoutLogKey, $seconds);
         }
+
+        ManualCaptcha::generate($this, 'login');
 
         throw ValidationException::withMessages([
             'email' => "Terlalu banyak percobaan gagal. Coba lagi dalam {$seconds} detik.",

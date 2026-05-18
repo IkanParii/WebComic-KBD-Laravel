@@ -31,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
         // }
         // --- KEAMANAN PASSWORD AUVERSE ---
         Password::defaults(function () {
-            return Password::min(8)       // Minimal 8 karakter
+            return Password::min(12)       // Minimal 12 karakter
                 ->letters()               // Wajib ada huruf
                 ->mixedCase()             // Wajib ada huruf BESAR dan kecil
                 ->symbols();              // Wajib ada simbol (@, #, !, dll)

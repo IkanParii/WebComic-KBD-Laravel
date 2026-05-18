@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\ManualCaptcha;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
@@ -21,7 +21,9 @@ class RegisteredUserController extends Controller
 {
     public function create(): View
     {
-        return view('auth.register');
+        return view('auth.register', [
+            'captchaQuestion' => ManualCaptcha::question(request(), 'register'),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -44,28 +46,26 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Password::defaults()],
             'role' => ['required', 'in:user,publisher'],
             'nama_publisher' => ['required_if:role,publisher', 'nullable', 'string', 'max:255'],
-            'g-recaptcha-response' => ['required', function ($attribute, $value, $fail) {
-                $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-                    'secret' => config('services.recaptcha.secret_key'),
-                    'response' => $value,
-                    'remoteip' => request()->ip(),
-                ]);
+            'captcha_answer' => ['required', 'string', function ($attribute, $value, $fail) use ($request) {
+                $answer = (string) $request->session()->get('manual_captcha.register.answer', '');
 
-                if (! $response->json('success')) {
-                    $fail('Verifikasi reCAPTCHA gagal. Silakan muat ulang halaman dan coba lagi.');
+                if ($answer === '' || trim((string) $value) !== $answer) {
+                    $fail('Jawaban CAPTCHA salah. Coba lagi.');
                 }
             }],
         ], [
             'nama_publisher.required_if' => 'Nama publisher wajib diisi jika memilih publisher.',
-            'g-recaptcha-response.required' => 'Wajib menyelesaikan verifikasi reCAPTCHA.',
+            'captcha_answer.required' => 'Wajib isi CAPTCHA manual.',
         ]);
 
         if ($validator->fails()) {
             RateLimiter::hit($throttleKey, $decaySeconds);
+            ManualCaptcha::generate($request, 'register');
             throw new ValidationException($validator);
         }
 
         RateLimiter::clear($throttleKey);
+        ManualCaptcha::generate($request, 'register');
 
         $user = User::create([
             'name' => strip_tags($request->name),

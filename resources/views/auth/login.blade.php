@@ -11,8 +11,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -137,8 +135,17 @@
                             @endif
                         </div>
 
-                        <div class="flex justify-center my-4">
-                            <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"data-theme="light"></div>
+                        <div>
+                            <label for="captcha_answer" class="mb-2 block text-sm font-semibold text-[#262626]">
+                                CAPTCHA Manual: {{ $captchaQuestion }} = ?
+                            </label>
+                            <input
+                                id="captcha_answer"
+                                name="captcha_answer"
+                                type="text"
+                                required
+                                class="h-14 w-full rounded-2xl border border-gray-300 bg-white px-4 text-sm text-gray-700 outline-none transition focus:border-[#7B4DFF] focus:ring-2 focus:ring-[#7B4DFF]"
+                            >
                         </div>
 
                         <button

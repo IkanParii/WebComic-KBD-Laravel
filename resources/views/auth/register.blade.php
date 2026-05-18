@@ -10,7 +10,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -192,7 +191,7 @@
                                 </div>
                                 
                                 <ul class="mt-2 grid grid-cols-2 gap-1 text-[11px] text-gray-500">
-                                    <li id="req-length" class="flex items-center gap-1 transition-colors"><span class="text-lg leading-none">&bull;</span> Min 8 karakter</li>
+                                    <li id="req-length" class="flex items-center gap-1 transition-colors"><span class="text-lg leading-none">&bull;</span> Min 12 karakter</li>
                                     <li id="req-upper" class="flex items-center gap-1 transition-colors"><span class="text-lg leading-none">&bull;</span> Huruf kapital</li>
                                     <li id="req-lower" class="flex items-center gap-1 transition-colors"><span class="text-lg leading-none">&bull;</span> Huruf kecil</li>
                                     <li id="req-symbol" class="flex items-center gap-1 transition-colors"><span class="text-lg leading-none">&bull;</span> Angka / Simbol</li>
@@ -238,8 +237,17 @@
                                 </button>
                             </div>
                         </div>
-                            <div class="flex justify-center my-4">
-                                <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}" data-theme="light"></div>
+                            <div>
+                                <label for="captcha_answer" class="mb-1.5 block text-sm font-semibold text-[#262626]">
+                                    CAPTCHA Manual: {{ $captchaQuestion }} = ?
+                                </label>
+                                <input
+                                    id="captcha_answer"
+                                    name="captcha_answer"
+                                    type="text"
+                                    required
+                                    class="h-11 w-full rounded-xl border border-gray-300 bg-white px-4 text-sm text-gray-700 outline-none transition focus:border-[#7B4DFF] focus:ring-2 focus:ring-[#7B4DFF]"
+                                >
                             </div>
                         <button
                             type="submit"
@@ -362,7 +370,7 @@
 
             // Kriteria persis dengan backend lo (Global Password Policy)
             const criteria = {
-                length: password.length >= 8,
+                length: password.length >= 12,
                 upper: /[A-Z]/.test(password),
                 lower: /[a-z]/.test(password),
                 symbol: /[\W_0-9]/.test(password) // Angka atau Spesial Karakter
