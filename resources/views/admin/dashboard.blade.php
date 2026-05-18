@@ -149,8 +149,20 @@
         <div class="mt-8 rounded-3xl border border-[#e6dcff] bg-white p-8 shadow-sm">
             <div class="mb-6 flex items-center justify-between">
                 <h2 class="text-xl font-bold text-[#241b3d]">Activity Log</h2>
-                <p class="text-xs font-medium text-[#6f6f79]">Menampilkan 50 aktivitas terbaru</p>
+                <form method="GET" action="{{ route('admin.dashboard') }}" class="flex items-center gap-2">
+                    <select name="event" class="rounded-xl border border-[#e6dcff] bg-white px-3 py-2 text-xs font-medium text-[#241b3d] focus:border-[#7b4dff] focus:outline-none">
+                        <option value="">Semua Event</option>
+                        @foreach($eventOptions as $eventOption)
+                            <option value="{{ $eventOption }}" @selected($selectedEvent === $eventOption)>{{ $eventOption }}</option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="rounded-xl bg-[#7b4dff] px-3 py-2 text-xs font-bold text-white hover:bg-[#5c37bf]">Filter</button>
+                    @if($selectedEvent !== '')
+                        <a href="{{ route('admin.dashboard') }}" class="rounded-xl border border-[#e6dcff] px-3 py-2 text-xs font-semibold text-[#6f6f79] hover:bg-[#f8f5ff]">Reset</a>
+                    @endif
+                </form>
             </div>
+            <p class="mb-4 text-xs font-medium text-[#6f6f79]">Menampilkan 50 aktivitas terbaru{{ $selectedEvent !== '' ? ' untuk event: ' . $selectedEvent : '' }}.</p>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">

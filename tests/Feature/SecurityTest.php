@@ -77,7 +77,7 @@ test('publisher tidak bisa lihat cerita orang lain di dashboard', function () {
     $p2 = User::factory()->create(['role' => 'publisher']);
     Cerita::factory()->create(['user_id' => $p2->id, 'judul' => 'Rahasia P2']);
     
-    test()->actingAs($p1)->get('/publisher/daftar-cerita')->assertDontSee('Rahasia P2');
+    test()->actingAs($p1)->withSession(['publisher_otp_verified' => true])->get('/publisher/daftar-cerita')->assertDontSee('Rahasia P2');
 });
 
 test('publisher tidak bisa edit cerita milik orang lain', function () {
@@ -85,7 +85,7 @@ test('publisher tidak bisa edit cerita milik orang lain', function () {
     $p2 = User::factory()->create(['role' => 'publisher']);
     $cerita2 = Cerita::factory()->create(['user_id' => $p2->id]);
     
-    test()->actingAs($p1)->get("/publisher/edit-cerita/{$cerita2->id}")->assertStatus(404);
+    test()->actingAs($p1)->withSession(['publisher_otp_verified' => true])->get("/publisher/edit-cerita/{$cerita2->id}")->assertStatus(404);
 });
 
 test('publisher tidak bisa update cerita milik orang lain', function () {
@@ -93,7 +93,7 @@ test('publisher tidak bisa update cerita milik orang lain', function () {
     $p2 = User::factory()->create(['role' => 'publisher']);
     $cerita2 = Cerita::factory()->create(['user_id' => $p2->id, 'judul' => 'Asli']);
     
-    test()->actingAs($p1)->put("/publisher/update-cerita/{$cerita2->id}", [
+    test()->actingAs($p1)->withSession(['publisher_otp_verified' => true])->put("/publisher/update-cerita/{$cerita2->id}", [
         'judul' => 'Diubah Hacker', 'tanggal_rilis' => now()->toDateString(), 'deskripsi_singkat' => 'hacked', 'isi_cerita' => 'hacked', 'genres' => [Genre::factory()->create()->id]
     ])->assertStatus(404);
     test()->assertDatabaseHas('ceritas', ['judul' => 'Asli']);
@@ -104,7 +104,7 @@ test('publisher tidak bisa hapus cerita milik orang lain', function () {
     $p2 = User::factory()->create(['role' => 'publisher']);
     $cerita2 = Cerita::factory()->create(['user_id' => $p2->id]);
     
-    test()->actingAs($p1)->delete("/publisher/hapus-cerita/{$cerita2->id}")->assertStatus(404);
+    test()->actingAs($p1)->withSession(['publisher_otp_verified' => true])->delete("/publisher/hapus-cerita/{$cerita2->id}")->assertStatus(404);
     test()->assertDatabaseHas('ceritas', ['id' => $cerita2->id]);
 });
 
@@ -120,7 +120,7 @@ test('publisher TIDAK BISA bikin cerita dengan JUDUL KEMBAR (Unique Rule)', func
     Cerita::factory()->create(['user_id' => $p->id, 'judul' => 'Petualangan Budi']);
 
     // Coba bikin cerita kedua dengan judul yang sama persis
-    $response = test()->actingAs($p)->post('/publisher/tambah-cerita', [
+    $response = test()->actingAs($p)->withSession(['publisher_otp_verified' => true])->post('/publisher/tambah-cerita', [
         'judul' => 'Petualangan Budi', // Judul kembar
         'tanggal_rilis' => now()->toDateString(),
         'deskripsi_singkat' => 'Deskripsi',
@@ -138,7 +138,7 @@ test('publisher bisa update cerita tanpa kena error unique di judulnya sendiri',
     $cerita = Cerita::factory()->create(['user_id' => $p->id, 'judul' => 'Judul Aman']);
 
     // Update isinya doang, judulnya tetep sama
-    $response = test()->actingAs($p)->put("/publisher/update-cerita/{$cerita->id}", [
+    $response = test()->actingAs($p)->withSession(['publisher_otp_verified' => true])->put("/publisher/update-cerita/{$cerita->id}", [
         'judul' => 'Judul Aman', 
         'tanggal_rilis' => now()->toDateString(),
         'deskripsi_singkat' => 'Update deskripsi baru',
@@ -153,7 +153,7 @@ test('publisher bisa update cerita tanpa kena error unique di judulnya sendiri',
 test('sistem menolak genre ID bodong atau dimanipulasi', function () {
     $p = User::factory()->create(['role' => 'publisher']);
     
-    $response = test()->actingAs($p)->post('/publisher/tambah-cerita', [
+    $response = test()->actingAs($p)->withSession(['publisher_otp_verified' => true])->post('/publisher/tambah-cerita', [
         'judul' => 'Judul Normal',
         'tanggal_rilis' => now()->toDateString(),
         'deskripsi_singkat' => 'Deskripsi',
@@ -177,7 +177,7 @@ test('admin update user membersihkan script jahat', function () {
 
 test('publisher tambah cerita membersihkan html tags di judul', function () {
     $p = User::factory()->create(['role' => 'publisher']);
-    test()->actingAs($p)->post('/publisher/tambah-cerita', [
+    test()->actingAs($p)->withSession(['publisher_otp_verified' => true])->post('/publisher/tambah-cerita', [
         'judul' => '<b>Komik</b><marquee>Jahat</marquee>',
         'tanggal_rilis' => now()->toDateString(),
         'deskripsi_singkat' => 'deskripsi',
@@ -201,7 +201,7 @@ test('publisher tidak bisa memanipulasi user_id saat bikin cerita baru', functio
     $p1 = User::factory()->create(['role' => 'publisher']);
     $p2 = User::factory()->create(['role' => 'publisher']); // Target hack
     
-    test()->actingAs($p1)->post('/publisher/tambah-cerita', [
+    test()->actingAs($p1)->withSession(['publisher_otp_verified' => true])->post('/publisher/tambah-cerita', [
         'judul' => 'Coba Hack', 'tanggal_rilis' => now()->toDateString(), 'deskripsi_singkat' => 'x', 'isi_cerita' => 'x', 'genres' => [Genre::factory()->create()->id],
         'user_id' => $p2->id // Sengaja ngirim form pakai ID orang lain
     ]);
@@ -217,7 +217,7 @@ test('publisher tidak bisa memanipulasi user_id saat bikin cerita baru', functio
 
 test('sistem menolak judul cerita yang terlalu panjang', function () {
     $p = User::factory()->create(['role' => 'publisher']);
-    $response = test()->actingAs($p)->post('/publisher/tambah-cerita', [
+    $response = test()->actingAs($p)->withSession(['publisher_otp_verified' => true])->post('/publisher/tambah-cerita', [
         'judul' => str_repeat('A', 300),
         'tanggal_rilis' => now()->toDateString(),
         'deskripsi_singkat' => 'x',
@@ -229,7 +229,7 @@ test('sistem menolak judul cerita yang terlalu panjang', function () {
 
 test('sistem menolak tanggal yang tidak valid', function () {
     $p = User::factory()->create(['role' => 'publisher']);
-    $response = test()->actingAs($p)->post('/publisher/tambah-cerita', [
+    $response = test()->actingAs($p)->withSession(['publisher_otp_verified' => true])->post('/publisher/tambah-cerita', [
         'judul' => 'Judul', 'tanggal_rilis' => '2024-13-45', 'deskripsi_singkat' => 'x', 'isi_cerita' => 'x', 'genres' => [Genre::factory()->create()->id]
     ]);
     $response->assertSessionHasErrors('tanggal_rilis');

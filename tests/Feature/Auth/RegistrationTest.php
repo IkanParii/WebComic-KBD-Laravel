@@ -7,13 +7,15 @@ test('registration screen can be rendered', function () {
 });
 
 test('new users can register', function () {
-    $response = $this->post('/register', [
+    $response = $this->withSession(['manual_captcha.register.answer' => '7'])->post('/register', [
         'name' => 'Test User',
         'email' => 'test@example.com',
-        'password' => 'password',
-        'password_confirmation' => 'password',
+        'password' => 'PasswordBaru12!',
+        'password_confirmation' => 'PasswordBaru12!',
+        'role' => 'user',
+        'captcha_answer' => '7',
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $response->assertRedirect(route('home', absolute: false));
 });

@@ -18,8 +18,6 @@ class SecurityHeaders
         $scriptSrc = [
             "'self'",
             "'unsafe-inline'",
-            'https://www.google.com/recaptcha/',
-            'https://www.gstatic.com/recaptcha/',
         ];
 
         $styleSrc = [
@@ -53,7 +51,7 @@ class SecurityHeaders
                 'style-src '.implode(' ', $styleSrc),
                 "font-src 'self' https://fonts.gstatic.com data:",
                 "img-src 'self' data: https:",
-                "frame-src 'self' https://www.google.com/recaptcha/",
+                "frame-src 'self'",
                 'connect-src '.implode(' ', $connectSrc),
             ];
 

@@ -4,16 +4,9 @@ use App\Models\Cerita;
 use App\Models\Genre;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 
-beforeEach(function () {
-    Http::fake([
-        '*' => Http::response(['success' => true], 200),
-    ]);
-});
-
-test('login menolak request tanpa recaptcha token', function () {
+test('login menolak request tanpa captcha manual', function () {
     $user = User::factory()->create([
         'email' => 'user@example.com',
         'password' => Hash::make('password123'),
@@ -25,18 +18,18 @@ test('login menolak request tanpa recaptcha token', function () {
     ]);
 
     $response->assertRedirect('/login');
-    $response->assertSessionHasErrors('g-recaptcha-response');
+    $response->assertSessionHasErrors('captcha_answer');
     $this->assertGuest();
 });
 
 test('register menolak role admin dari publik', function () {
-    $response = $this->from('/register')->post('/register', [
+    $response = $this->from('/register')->withSession(['manual_captcha.register.answer' => '7'])->post('/register', [
         'name' => 'Attacker',
         'email' => 'attacker@example.com',
         'password' => 'Password123!',
         'password_confirmation' => 'Password123!',
         'role' => 'admin',
-        'g-recaptcha-response' => 'ok',
+        'captcha_answer' => '7',
     ]);
 
     $response->assertRedirect('/register');
@@ -54,10 +47,10 @@ test('login publisher wajib otp dan belum boleh akses area publisher sebelum ver
         'password' => Hash::make('password123'),
     ]);
 
-    $response = $this->post('/login', [
+    $response = $this->withSession(['manual_captcha.login.answer' => '5'])->post('/login', [
         'email' => $publisher->email,
         'password' => 'password123',
-        'g-recaptcha-response' => 'ok',
+        'captcha_answer' => '5',
     ]);
 
     $response->assertRedirect(route('publisher.otp.form'));
