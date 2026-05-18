@@ -60,7 +60,7 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('register') }}" class="space-y-3">
+                    <form method="POST" action="{{ route('register') }}" class="space-y-3" id="register-form">
                         @csrf
 
                         <div class="text-center">
@@ -294,6 +294,53 @@
             }
         }
 
+        function applyLockCountdown(formId, buttonId, defaultText) {
+            const form = document.getElementById(formId);
+            const button = document.getElementById(buttonId);
+            const errorBox = document.querySelector('.bg-red-100');
+
+            if (!form || !button || !errorBox) {
+                return;
+            }
+
+            const errorText = errorBox.textContent || '';
+            if (!errorText.includes('Terlalu banyak percobaan gagal')) {
+                return;
+            }
+
+            const match = errorText.match(/(\d+)\s*detik/i);
+            if (!match) {
+                return;
+            }
+
+            let remaining = parseInt(match[1], 10);
+            if (Number.isNaN(remaining) || remaining <= 0) {
+                return;
+            }
+
+            const lockUI = () => {
+                button.disabled = true;
+                button.classList.add('opacity-60', 'cursor-not-allowed');
+                button.textContent = `Coba lagi dalam ${remaining} detik`;
+            };
+
+            lockUI();
+
+            const timer = setInterval(() => {
+                remaining -= 1;
+
+                if (remaining <= 0) {
+                    clearInterval(timer);
+                    button.disabled = false;
+                    button.classList.remove('opacity-60', 'cursor-not-allowed');
+                    button.textContent = defaultText;
+                    return;
+                }
+
+                lockUI();
+            }, 1000);
+        }
+
         // 👇 TAMBAHAN LOGIC PASSWORD STRENGTH 👇
         function checkPasswordStrength() {
             const password = document.getElementById('password').value;
@@ -366,6 +413,7 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             togglePublisherField();
+            applyLockCountdown('register-form', 'btn-submit', 'Daftar Sekarang');
             
             // Pasang event listener biar meternya jalan tiap kali user ngetik
             document.getElementById('password').addEventListener('input', checkPasswordStrength);

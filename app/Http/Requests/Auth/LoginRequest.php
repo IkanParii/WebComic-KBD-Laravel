@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Support\ActivityLogger;
 use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -70,7 +71,18 @@ class LoginRequest extends FormRequest
         $user = User::where('email', $this->string('email'))->first();
 
         if (! $user || ! Hash::check($this->string('password'), $user->password)) {
-            RateLimiter::hit($this->throttleKey());
+            RateLimiter::hit($this->throttleKey(), 300);
+            $attempts = RateLimiter::attempts($this->throttleKey());
+            $email = (string) $this->string('email');
+
+            ActivityLogger::log(
+                'login_failed',
+                sprintf('Percobaan login gagal untuk email %s (%d/3).', $email, $attempts),
+                null,
+                $this,
+                $email !== '' ? $email : 'Guest',
+                'guest'
+            );
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
@@ -87,19 +99,32 @@ class LoginRequest extends FormRequest
      */
     public function ensureIsNotRateLimited(): void
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 3)) {
             return;
         }
 
         event(new Lockout($this));
 
         $seconds = RateLimiter::availableIn($this->throttleKey());
+        $lockoutLogKey = $this->throttleKey().'|lockout-log';
+
+        if (! RateLimiter::tooManyAttempts($lockoutLogKey, 1)) {
+            $email = (string) $this->string('email');
+
+            ActivityLogger::log(
+                'login_lockout',
+                sprintf('Akun/email %s terkunci sementara selama %d detik setelah 3 kali gagal login.', $email, $seconds),
+                null,
+                $this,
+                $email !== '' ? $email : 'Guest',
+                'guest'
+            );
+
+            RateLimiter::hit($lockoutLogKey, $seconds);
+        }
 
         throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]),
+            'email' => "Terlalu banyak percobaan gagal. Coba lagi dalam {$seconds} detik.",
         ]);
     }
 

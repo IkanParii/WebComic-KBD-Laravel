@@ -62,7 +62,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('login') }}" method="POST" class="space-y-5">
+                    <form action="{{ route('login') }}" method="POST" class="space-y-5" id="login-form">
                         @csrf
 
                         <div>
@@ -143,6 +143,7 @@
 
                         <button
                             type="submit"
+                            id="login-submit-btn"
                             class="h-14 w-full rounded-2xl bg-gradient-to-r from-[#7B4DFF] to-[#6C63FF] text-sm font-semibold text-white shadow-lg shadow-[#7B4DFF]/30 transition hover:opacity-95"
                         >
                             Masuk Sekarang
@@ -177,6 +178,57 @@
                 eyeClosed.classList.add('hidden');
             }
         }
+
+        function applyLockCountdown(formId, buttonId, defaultText) {
+            const form = document.getElementById(formId);
+            const button = document.getElementById(buttonId);
+            const errorBox = document.querySelector('.bg-red-100');
+
+            if (!form || !button || !errorBox) {
+                return;
+            }
+
+            const errorText = errorBox.textContent || '';
+            if (!errorText.includes('Terlalu banyak percobaan gagal')) {
+                return;
+            }
+
+            const match = errorText.match(/(\d+)\s*detik/i);
+            if (!match) {
+                return;
+            }
+
+            let remaining = parseInt(match[1], 10);
+            if (Number.isNaN(remaining) || remaining <= 0) {
+                return;
+            }
+
+            const lockUI = () => {
+                button.disabled = true;
+                button.classList.add('opacity-60', 'cursor-not-allowed');
+                button.textContent = `Coba lagi dalam ${remaining} detik`;
+            };
+
+            lockUI();
+
+            const timer = setInterval(() => {
+                remaining -= 1;
+
+                if (remaining <= 0) {
+                    clearInterval(timer);
+                    button.disabled = false;
+                    button.classList.remove('opacity-60', 'cursor-not-allowed');
+                    button.textContent = defaultText;
+                    return;
+                }
+
+                lockUI();
+            }, 1000);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            applyLockCountdown('login-form', 'login-submit-btn', 'Masuk Sekarang');
+        });
     </script>
 </body>
 </html>
