@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cerita;
 use App\Models\Genre;
+use App\Support\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule; // 👈 Wajib tambahin ini buat ignore unique pas update
@@ -58,6 +59,13 @@ class PublisherController extends Controller
         ]);
 
         $cerita->genres()->attach($request->genres);
+
+        ActivityLogger::log(
+            'cerita_created',
+            sprintf('%s menambahkan cerita baru: "%s".', Auth::user()->name, $cerita->judul),
+            Auth::user(),
+            $request
+        );
 
         return redirect()->route('publisher.index')->with('success', 'Cerita berhasil dibuat!');
     }

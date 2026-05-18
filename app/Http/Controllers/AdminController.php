@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Cerita;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,6 +15,7 @@ class AdminController extends Controller
         // 1. Data buat di TABEL (Admin sengaja di-hide biar aman)
         $users = User::where('role', '!=', 'admin')->latest()->get();
         $ceritas = Cerita::latest()->get();
+        $activityLogs = ActivityLog::latest()->take(50)->get();
         
         // 2. Data logic buat di KARTU OVERVIEW 
         $totalSemuaUser = User::count(); 
@@ -22,6 +24,7 @@ class AdminController extends Controller
         return view('admin.dashboard', compact(
             'users', 
             'ceritas', 
+            'activityLogs',
             'totalSemuaUser', 
             'totalSemuaCerita'
         ));

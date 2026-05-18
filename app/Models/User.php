@@ -46,6 +46,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Cerita::class, 'favorites', 'user_id', 'cerita_id')->withTimestamps();
     }
 
+    public function activityLogs()
+    {
+        return $this->hasMany(ActivityLog::class);
+    }
+
     public function sendEmailVerificationNotification()
     {
         $this->notify(new \App\Notifications\CustomVerifyEmail);

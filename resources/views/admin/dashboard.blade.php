@@ -145,6 +145,49 @@
             </div>
 
         </div>
+
+        <div class="mt-8 rounded-3xl border border-[#e6dcff] bg-white p-8 shadow-sm">
+            <div class="mb-6 flex items-center justify-between">
+                <h2 class="text-xl font-bold text-[#241b3d]">Activity Log</h2>
+                <p class="text-xs font-medium text-[#6f6f79]">Menampilkan 50 aktivitas terbaru</p>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead>
+                        <tr class="border-b border-[#f1edff] text-[#6f6f79]">
+                            <th class="pb-3 font-semibold">Waktu</th>
+                            <th class="pb-3 font-semibold">User</th>
+                            <th class="pb-3 font-semibold">Event</th>
+                            <th class="pb-3 font-semibold">Deskripsi</th>
+                            <th class="pb-3 font-semibold">IP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($activityLogs as $log)
+                        <tr class="border-b border-[#f1edff] last:border-none hover:bg-[#fcfbff]">
+                            <td class="py-4 pr-4 text-xs text-gray-500">{{ $log->created_at->format('d M Y H:i') }}</td>
+                            <td class="py-4 pr-4">
+                                <p class="font-bold text-[#241b3d]">{{ $log->actor_name }}</p>
+                                <p class="text-xs text-gray-500">{{ $log->actor_role ?? '-' }}</p>
+                            </td>
+                            <td class="py-4 pr-4">
+                                <span class="rounded-lg bg-[#efe7ff] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#7b4dff]">
+                                    {{ $log->event }}
+                                </span>
+                            </td>
+                            <td class="py-4 pr-4 text-[#241b3d]">{{ $log->description }}</td>
+                            <td class="py-4 text-xs text-gray-500">{{ $log->ip_address ?? '-' }}</td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="py-6 text-center text-gray-500">Belum ada aktivitas tercatat.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </main>
 
     <div id="popupHapus" class="fixed inset-0 z-50 hidden items-center justify-center bg-[#241b3d]/40 px-4 backdrop-blur-sm transition-opacity duration-300">

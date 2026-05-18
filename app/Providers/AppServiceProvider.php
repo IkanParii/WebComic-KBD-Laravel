@@ -2,11 +2,14 @@
 
 namespace App\Providers;
 
+use App\Support\ActivityLogger;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Validation\Rules\Password; 
-use Illuminate\Auth\Notifications\ResetPassword; 
-use Illuminate\Notifications\Messages\MailMessage; 
-use Illuminate\Support\Facades\URL;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -48,6 +51,24 @@ class AppServiceProvider extends ServiceProvider
                     'url' => $url,
                     'user' => $notifiable
                 ]);
+        });
+
+        Event::listen(Login::class, function (Login $event) {
+            ActivityLogger::log(
+                'login',
+                sprintf('%s berhasil login sebagai %s.', $event->user->name, $event->user->role),
+                $event->user,
+                request()
+            );
+        });
+
+        Event::listen(Registered::class, function (Registered $event) {
+            ActivityLogger::log(
+                'register',
+                sprintf('%s mendaftar sebagai %s.', $event->user->name, $event->user->role),
+                $event->user,
+                request()
+            );
         });
     }
 }
