@@ -275,3 +275,207 @@ Jika database error:
 ---
 
 # Punya Pahri (Minimal Baca Bang Capek Bikin Readme)
+
+---
+
+# Deploy Production Ubuntu (Nginx + PHP-FPM 8.5)
+
+Panduan ini dari awal (server baru) sampai aplikasi siap online.
+
+## 1. Update server dan install package dasar
+
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y software-properties-common ca-certificates lsb-release apt-transport-https curl unzip git nginx mysql-server redis-server supervisor
+```
+
+## 2. Install PHP 8.5 + ekstensi Laravel
+
+```bash
+sudo add-apt-repository ppa:ondrej/php -y
+sudo apt update
+sudo apt install -y php8.5-fpm php8.5-cli php8.5-common php8.5-mysql php8.5-mbstring php8.5-xml php8.5-curl php8.5-zip php8.5-bcmath php8.5-gd php8.5-intl php8.5-redis
+php -v
+```
+
+## 3. Install Composer
+
+```bash
+cd /tmp
+curl -sS https://getcomposer.org/installer -o composer-setup.php
+php composer-setup.php
+sudo mv composer.phar /usr/local/bin/composer
+composer --version
+```
+
+## 4. Setup database MySQL
+
+```bash
+sudo mysql
+```
+
+```sql
+CREATE DATABASE webcomic_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'webcomic_user'@'localhost' IDENTIFIED BY 'PasswordKuatBanget!';
+GRANT ALL PRIVILEGES ON webcomic_db.* TO 'webcomic_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+## 5. Upload project ke server
+
+```bash
+sudo mkdir -p /var/www/webcomic
+sudo chown -R $USER:$USER /var/www/webcomic
+cd /var/www/webcomic
+git clone https://github.com/IkanParii/WebComic-KBD-Laravel.git .
+```
+
+## 6. Install dependency dan setup environment
+
+```bash
+composer install --no-dev --optimize-autoloader
+cp .env.example .env
+php artisan key:generate
+```
+
+Edit file `.env`:
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://domainkamu.com
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=webcomic_db
+DB_USERNAME=webcomic_user
+DB_PASSWORD=PasswordKuatBanget!
+```
+
+## 7. Migrasi dan optimize
+
+```bash
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+php artisan event:cache
+```
+
+## 8. Permission folder
+
+```bash
+sudo chown -R www-data:www-data /var/www/webcomic
+sudo find /var/www/webcomic -type f -exec chmod 644 {} \;
+sudo find /var/www/webcomic -type d -exec chmod 755 {} \;
+sudo chmod -R 775 /var/www/webcomic/storage /var/www/webcomic/bootstrap/cache
+```
+
+## 9. Konfigurasi Nginx
+
+Buat file:
+
+```bash
+sudo nano /etc/nginx/sites-available/webcomic
+```
+
+Isi konfigurasi:
+
+```nginx
+server {
+    listen 80;
+    server_name domainkamu.com www.domainkamu.com;
+    root /var/www/webcomic/public;
+
+    index index.php index.html;
+    charset utf-8;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    error_page 404 /index.php;
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php8.5-fpm.sock;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}
+```
+
+Aktifkan site:
+
+```bash
+sudo ln -s /etc/nginx/sites-available/webcomic /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+sudo systemctl restart php8.5-fpm
+```
+
+## 10. SSL (Let's Encrypt)
+
+```bash
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d domainkamu.com -d www.domainkamu.com
+```
+
+## 11. Queue worker (opsional kalau pakai queue)
+
+```bash
+sudo nano /etc/supervisor/conf.d/webcomic-worker.conf
+```
+
+Isi:
+
+```ini
+[program:webcomic-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /var/www/webcomic/artisan queue:work --sleep=3 --tries=3 --timeout=90
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=www-data
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/var/www/webcomic/storage/logs/worker.log
+```
+
+Aktifkan:
+
+```bash
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl start webcomic-worker:*
+```
+
+## 12. Scheduler Laravel
+
+```bash
+crontab -e
+```
+
+Tambahkan:
+
+```cron
+* * * * * cd /var/www/webcomic && php artisan schedule:run >> /dev/null 2>&1
+```
+
+## 13. Final check sebelum go live
+
+```bash
+php artisan about
+php artisan test
+sudo systemctl status nginx
+sudo systemctl status php8.5-fpm
+sudo supervisorctl status
+```
