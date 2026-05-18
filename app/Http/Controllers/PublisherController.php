@@ -22,7 +22,15 @@ class PublisherController extends Controller
     public function destroy($id)
     {
         $cerita = Cerita::where('user_id', Auth::id())->findOrFail($id);
+        $judul = $cerita->judul;
         $cerita->delete();
+
+        ActivityLogger::log(
+            'cerita_deleted',
+            sprintf('%s menghapus cerita: "%s".', Auth::user()->name, $judul),
+            Auth::user(),
+            request()
+        );
         
         return redirect()->route('publisher.index')->with('success', 'Cerita berhasil dihapus!');
     }
@@ -84,6 +92,7 @@ class PublisherController extends Controller
     public function update(Request $request, $id)
     {
         $cerita = Cerita::where('user_id', Auth::id())->findOrFail($id);
+        $judulSebelum = $cerita->judul;
 
         $request->validate([
             // 👇 Pake Rule::unique() biar bisa di-ignore pas ngedit judul yang sama
@@ -111,6 +120,18 @@ class PublisherController extends Controller
         ]);
 
         $cerita->genres()->sync($request->genres);
+
+        ActivityLogger::log(
+            'cerita_updated',
+            sprintf(
+                '%s mengedit cerita "%s" menjadi "%s".',
+                Auth::user()->name,
+                $judulSebelum,
+                $cerita->judul
+            ),
+            Auth::user(),
+            $request
+        );
 
         return redirect()->route('publisher.index')->with('success', 'Cerita berhasil diupdate!');
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,14 +32,32 @@ class PublisherOtpController extends Controller
         $user = User::find($userId);
 
         if (! $user || ! $user->publisher_otp_code || ! $user->publisher_otp_expires_at) {
+            ActivityLogger::log(
+                'publisher_otp_invalid_session',
+                'Percobaan verifikasi OTP gagal karena sesi OTP tidak valid.',
+                null,
+                $request
+            );
             return redirect()->route('login')->withErrors(['email' => 'Sesi OTP tidak valid. Silakan login ulang.']);
         }
 
         if (now()->greaterThan($user->publisher_otp_expires_at)) {
+            ActivityLogger::log(
+                'publisher_otp_expired',
+                sprintf('OTP publisher kedaluwarsa untuk akun %s.', $user->email),
+                $user,
+                $request
+            );
             return back()->withErrors(['otp' => 'Kode OTP sudah kedaluwarsa. Silakan kirim ulang OTP.']);
         }
 
         if (! hash_equals($user->publisher_otp_code, (string) $request->otp)) {
+            ActivityLogger::log(
+                'publisher_otp_failed',
+                sprintf('OTP publisher salah untuk akun %s.', $user->email),
+                $user,
+                $request
+            );
             return back()->withErrors(['otp' => 'Kode OTP salah.']);
         }
 
@@ -53,6 +72,13 @@ class PublisherOtpController extends Controller
         $request->session()->put('publisher_otp_verified', true);
         $request->session()->forget('publisher_otp_user_id');
         $request->session()->regenerate();
+
+        ActivityLogger::log(
+            'publisher_otp_verified',
+            sprintf('OTP publisher berhasil diverifikasi untuk akun %s.', $user->email),
+            $user,
+            $request
+        );
 
         return redirect()->intended(route('home', absolute: false));
     }
@@ -82,6 +108,13 @@ class PublisherOtpController extends Controller
         ], function ($message) use ($user) {
             $message->to($user->email)->subject('OTP Login Publisher');
         });
+
+        ActivityLogger::log(
+            'publisher_otp_resent',
+            sprintf('Publisher meminta kirim ulang OTP untuk akun %s.', $user->email),
+            $user,
+            $request
+        );
 
         return back()->with('status', 'OTP baru sudah dikirim ke email Anda.');
     }
