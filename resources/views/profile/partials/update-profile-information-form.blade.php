@@ -47,6 +47,21 @@
             @endif
         </div>
 
+        @if ($user->role === 'publisher')
+            <div>
+                <x-input-label for="nama_publisher" :value="__('Nama Publisher')" />
+                <x-text-input
+                    id="nama_publisher"
+                    name="nama_publisher"
+                    type="text"
+                    class="mt-1 block w-full"
+                    :value="old('nama_publisher', $user->nama_publisher)"
+                    required
+                />
+                <x-input-error class="mt-2" :messages="$errors->get('nama_publisher')" />
+            </div>
+        @endif
+
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 

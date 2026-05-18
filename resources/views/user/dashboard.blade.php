@@ -41,6 +41,105 @@
             <p class="text-[#8e8e99] mt-1 text-[15px] font-medium">Kelola daftar AU favorit lo dengan cepat.</p>
         </div>
 
+        @if (session('status') === 'profile-updated')
+            <div class="mb-6 rounded-xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-semibold text-green-700">
+                Profil berhasil diperbarui.
+            </div>
+        @endif
+
+        @if (session('status') === 'password-updated')
+            <div class="mb-6 rounded-xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-semibold text-green-700">
+                Password berhasil diperbarui.
+            </div>
+        @endif
+
+        <div class="mb-8 grid grid-cols-1 gap-6 xl:grid-cols-2">
+            <div class="bg-white rounded-[24px] p-8 shadow-[0_2px_10px_rgba(0,0,0,0.02)] w-full">
+                <h3 class="text-[22px] font-extrabold text-[#222222] mb-6">Edit Profil</h3>
+
+                <form method="POST" action="{{ route('profile.update') }}" class="space-y-4">
+                    @csrf
+                    @method('PATCH')
+
+                    <div>
+                        <label for="name" class="mb-2 block text-sm font-semibold text-[#262626]">Nama</label>
+                        <input id="name" name="name" type="text" value="{{ old('name', $user->name) }}" required class="h-11 w-full rounded-xl border border-gray-300 bg-white px-4 text-sm text-gray-700 outline-none transition focus:border-[#6f42f5] focus:ring-2 focus:ring-[#6f42f5]" />
+                        @error('name')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="email" class="mb-2 block text-sm font-semibold text-[#262626]">Email</label>
+                        <input id="email" name="email" type="email" value="{{ old('email', $user->email) }}" required class="h-11 w-full rounded-xl border border-gray-300 bg-white px-4 text-sm text-gray-700 outline-none transition focus:border-[#6f42f5] focus:ring-2 focus:ring-[#6f42f5]" />
+                        @error('email')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    @if($user->role === 'publisher')
+                        <div>
+                            <label for="nama_publisher" class="mb-2 block text-sm font-semibold text-[#262626]">Nama Publisher</label>
+                            <input id="nama_publisher" name="nama_publisher" type="text" value="{{ old('nama_publisher', $user->nama_publisher) }}" required class="h-11 w-full rounded-xl border border-gray-300 bg-white px-4 text-sm text-gray-700 outline-none transition focus:border-[#6f42f5] focus:ring-2 focus:ring-[#6f42f5]" />
+                            @error('nama_publisher')
+                                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    @endif
+
+                    <button type="submit" class="h-11 rounded-xl bg-[#6f42f5] px-5 text-sm font-bold text-white transition hover:bg-[#5d35d1]">
+                        Simpan Profil
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white rounded-[24px] p-8 shadow-[0_2px_10px_rgba(0,0,0,0.02)] w-full">
+                <h3 class="text-[22px] font-extrabold text-[#222222] mb-6">Ganti Password</h3>
+
+                <form method="POST" action="{{ route('password.update') }}" class="space-y-4">
+                    @csrf
+                    @method('PUT')
+
+                    <div>
+                        <label for="current_password" class="mb-2 block text-sm font-semibold text-[#262626]">Password Lama</label>
+                        <div class="relative">
+                            <input id="current_password" name="current_password" type="password" class="h-11 w-full rounded-xl border border-gray-300 bg-white px-4 pr-11 text-sm text-gray-700 outline-none transition focus:border-[#6f42f5] focus:ring-2 focus:ring-[#6f42f5]" />
+                            <button type="button" onclick="togglePassword('current_password', this)" class="absolute inset-y-0 right-3 text-[#6f42f5] text-sm font-bold">Lihat</button>
+                        </div>
+                        @if ($errors->updatePassword->has('current_password'))
+                            <p class="mt-1 text-xs text-red-600">{{ $errors->updatePassword->first('current_password') }}</p>
+                        @endif
+                    </div>
+
+                    <div>
+                        <label for="password" class="mb-2 block text-sm font-semibold text-[#262626]">Password Baru</label>
+                        <div class="relative">
+                            <input id="password" name="password" type="password" class="h-11 w-full rounded-xl border border-gray-300 bg-white px-4 pr-11 text-sm text-gray-700 outline-none transition focus:border-[#6f42f5] focus:ring-2 focus:ring-[#6f42f5]" />
+                            <button type="button" onclick="togglePassword('password', this)" class="absolute inset-y-0 right-3 text-[#6f42f5] text-sm font-bold">Lihat</button>
+                        </div>
+                        @if ($errors->updatePassword->has('password'))
+                            <p class="mt-1 text-xs text-red-600">{{ $errors->updatePassword->first('password') }}</p>
+                        @endif
+                    </div>
+
+                    <div>
+                        <label for="password_confirmation" class="mb-2 block text-sm font-semibold text-[#262626]">Konfirmasi Password Baru</label>
+                        <div class="relative">
+                            <input id="password_confirmation" name="password_confirmation" type="password" class="h-11 w-full rounded-xl border border-gray-300 bg-white px-4 pr-11 text-sm text-gray-700 outline-none transition focus:border-[#6f42f5] focus:ring-2 focus:ring-[#6f42f5]" />
+                            <button type="button" onclick="togglePassword('password_confirmation', this)" class="absolute inset-y-0 right-3 text-[#6f42f5] text-sm font-bold">Lihat</button>
+                        </div>
+                        @if ($errors->updatePassword->has('password_confirmation'))
+                            <p class="mt-1 text-xs text-red-600">{{ $errors->updatePassword->first('password_confirmation') }}</p>
+                        @endif
+                    </div>
+
+                    <button type="submit" class="h-11 rounded-xl bg-[#6f42f5] px-5 text-sm font-bold text-white transition hover:bg-[#5d35d1]">
+                        Simpan Password
+                    </button>
+                </form>
+            </div>
+        </div>
+
         <div class="bg-white rounded-[24px] p-8 shadow-[0_2px_10px_rgba(0,0,0,0.02)] w-full">
             <h3 class="text-[22px] font-extrabold text-[#222222] mb-6">Daftar AU Favorit</h3>
             
@@ -84,5 +183,19 @@
         </div>
     </main>
 
+    <script>
+        function togglePassword(inputId, button) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = 'Sembunyi';
+            } else {
+                input.type = 'password';
+                button.textContent = 'Lihat';
+            }
+        }
+    </script>
 </body>
 </html>
