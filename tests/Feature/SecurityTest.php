@@ -259,3 +259,62 @@ test('hapus user tidak bisa lewat method get', function () {
     test()->actingAs($admin)->get("/admin/user/delete/{$user->id}")->assertStatus(404); 
     test()->assertDatabaseHas('users', ['id' => $user->id]);
 });
+
+// ============================================================================
+// 10. OTP HARDENING (ANTI BRUTE FORCE TANPA PIHAK KETIGA)
+// ============================================================================
+
+test('otp publisher dikunci setelah 5 kali gagal dan wajib login ulang', function () {
+    $publisher = User::factory()->create([
+        'role' => 'publisher',
+        'email_verified_at' => now(),
+        'publisher_otp_code' => '123456',
+        'publisher_otp_expires_at' => now()->addMinutes(10),
+    ]);
+
+    for ($i = 0; $i < 4; $i++) {
+        test()->withSession([
+            'publisher_otp_user_id' => $publisher->id,
+            'publisher_otp_remember' => false,
+        ])->from(route('publisher.otp.form'))->post(route('publisher.otp.verify'), [
+            'otp' => '654321',
+        ])->assertRedirect(route('publisher.otp.form'));
+    }
+
+    test()->withSession([
+        'publisher_otp_user_id' => $publisher->id,
+        'publisher_otp_remember' => false,
+    ])->post(route('publisher.otp.verify'), [
+        'otp' => '654321',
+    ])->assertRedirect(route('login'))
+      ->assertSessionHasErrors('email');
+
+    test()->assertGuest();
+    test()->assertDatabaseHas('users', [
+        'id' => $publisher->id,
+        'publisher_otp_code' => null,
+        'publisher_otp_expires_at' => null,
+    ]);
+});
+
+test('resend otp publisher dibatasi jika terlalu sering', function () {
+    \Illuminate\Support\Facades\Mail::fake();
+
+    $publisher = User::factory()->create([
+        'role' => 'publisher',
+        'email_verified_at' => now(),
+        'publisher_otp_code' => '123456',
+        'publisher_otp_expires_at' => now()->addMinutes(10),
+    ]);
+
+    for ($i = 0; $i < 3; $i++) {
+        test()->withSession([
+            'publisher_otp_user_id' => $publisher->id,
+        ])->post(route('publisher.otp.resend'))->assertRedirect();
+    }
+
+    test()->withSession([
+        'publisher_otp_user_id' => $publisher->id,
+    ])->post(route('publisher.otp.resend'))
+      ->assertStatus(429);
+});

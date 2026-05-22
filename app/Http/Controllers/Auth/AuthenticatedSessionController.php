@@ -43,6 +43,8 @@ class AuthenticatedSessionController extends Controller
                 $message->to($user->email)->subject('OTP Login Publisher');
             });
 
+            // Regenerate guest session before storing OTP challenge context.
+            $request->session()->regenerate();
             $request->session()->put('publisher_otp_user_id', $user->id);
             $request->session()->put('publisher_otp_remember', $request->boolean('remember'));
             $request->session()->put('publisher_otp_verified', false);
