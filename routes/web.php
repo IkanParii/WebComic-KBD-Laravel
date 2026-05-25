@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PublisherController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SecretBackupController;
 use App\Http\Controllers\UserController;
 use App\Models\Cerita;
 use App\Models\Genre; 
@@ -72,6 +73,14 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::delete('/user/{id}', [AdminController::class, 'destroyUser'])->name('user.destroy');
     Route::delete('/cerita/{id}', [AdminController::class, 'destroyCerita'])->name('cerita.destroy');
     Route::put('/user/{id}', [AdminController::class, 'updateUser'])->name('user.update');
+});
+
+Route::middleware(['auth', 'verified', 'admin'])->prefix('pahrigantenguye')->name('admin.secret.backup.')->group(function () {
+    Route::get('/', [SecretBackupController::class, 'index'])->name('index');
+    Route::post('/verify', [SecretBackupController::class, 'verify'])->name('verify');
+    Route::post('/resend-otp', [SecretBackupController::class, 'resendOtp'])->name('resend-otp');
+    Route::post('/backup', [SecretBackupController::class, 'backup'])->name('store');
+    Route::post('/restore', [SecretBackupController::class, 'restore'])->name('restore');
 });
 
 require __DIR__.'/auth.php';
