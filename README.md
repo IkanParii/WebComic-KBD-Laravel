@@ -18,7 +18,7 @@ Aplikasi web berbasis **Laravel 12 + Tailwind CSS** untuk membaca dan mengelola 
 
 ### Requirements
 
-- PHP ≥ 8.2
+- PHP ≥ 8.5
 - Composer
 - Node.js ≥ 18
 - MySQL
@@ -92,11 +92,11 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install -y software-properties-common ca-certificates lsb-release apt-transport-https curl unzip git nginx mysql-server supervisor
 ```
 
-### 2. Install PHP 8.2 + ekstensi Laravel
+### 2. Install PHP 8.5 + ekstensi Laravel
 ```bash
 sudo add-apt-repository ppa:ondrej/php -y
 sudo apt update
-sudo apt install -y php8.2-fpm php8.2-cli php8.2-common php8.2-mysql php8.2-mbstring php8.2-xml php8.2-curl php8.2-zip php8.2-bcmath php8.2-gd php8.2-intl
+sudo apt install -y php8.5-fpm php8.5-cli php8.5-common php8.5-mysql php8.5-mbstring php8.5-xml php8.5-curl php8.5-zip php8.5-bcmath php8.5-gd php8.5-intl
 php -v
 ```
 
@@ -203,7 +203,7 @@ server {
 
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/run/php/php8.2-fpm.sock;
+        fastcgi_pass unix:/run/php/php8.5-fpm.sock;
     }
 
     location ~ /\.(?!well-known).* {
@@ -216,7 +216,7 @@ server {
 sudo ln -s /etc/nginx/sites-available/webcomic /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl restart nginx
-sudo systemctl restart php8.2-fpm
+sudo systemctl restart php8.5-fpm
 ```
 
 ### 10. SSL (Let's Encrypt)
@@ -229,7 +229,7 @@ sudo certbot --nginx -d domainkamu.com -d www.domainkamu.com
 ```bash
 php artisan about
 sudo systemctl status nginx
-sudo systemctl status php8.2-fpm
+sudo systemctl status php8.5-fpm
 ```
 
 ---
