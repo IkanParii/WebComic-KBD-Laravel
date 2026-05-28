@@ -157,9 +157,13 @@ MAIL_PASSWORD=app_password_gmail
 MAIL_FROM_ADDRESS=emailkamu@gmail.com
 
 SECRET_PANEL_PASSWORD=password_rahasia_kuat_baru
+MYSQL_BIN_PATH=/usr/bin
 ```
 
 ### 7. Migrasi & optimize
+
+> ⚠️ Pastikan `.env` sudah lengkap dan benar sebelum menjalankan perintah cache di bawah. Setelah `config:cache` dijalankan, Laravel tidak lagi membaca `.env` secara langsung — semua nilai diambil dari cache. Jika `.env` diubah setelah ini, jalankan `php artisan config:clear` lalu `php artisan config:cache` lagi.
+
 ```bash
 php artisan migrate --force
 php artisan config:cache
