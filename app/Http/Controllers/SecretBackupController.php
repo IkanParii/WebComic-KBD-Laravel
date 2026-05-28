@@ -149,7 +149,7 @@ class SecretBackupController extends Controller
         $otpFromSession = (string) $request->session()->get(self::SESSION_OTP_KEY, '');
         $captchaAnswer = (string) $request->session()->get('manual_captcha.'.self::CAPTCHA_CONTEXT.'.answer', '');
 
-        if ($request->input('panel_password') !== (string) env('SECRET_PANEL_PASSWORD', '')) {
+        if ($request->input('panel_password') !== (string) config('app.secret_panel_password', '')) {
             throw ValidationException::withMessages([
                 'panel_password' => 'Password panel salah.',
             ]);
