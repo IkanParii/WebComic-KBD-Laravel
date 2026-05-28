@@ -4,6 +4,130 @@
 
 ---
 
+## 🏗️ Arsitektur Sistem
+
+**Alur Request:**
+```
+Browser → Web Server → Laravel Router → Middleware Stack → Controller → Model → Database
+```
+
+---
+
+## 👥 Role & Business Logic
+
+### Alur Akses per Role
+
+```
+Semua Role:
+  Login → Verifikasi Email → Akses sesuai role
+
+Publisher (tambahan):
+  Login → Verifikasi Email → Verifikasi OTP → Akses dashboard publisher
+
+Secret Panel (admin tertentu):
+  Admin login → Admin middleware → OTP email + Panel Password + CAPTCHA → Backup/Restore
+```
+
+### User
+- Membaca komik
+- Toggle favorit (maks 30x/menit)
+- Tidak bisa membuat, mengedit, atau menghapus konten apapun
+
+### Publisher
+- CRUD cerita **milik sendiri saja** — query selalu difilter `where('user_id', Auth::id())`
+- Wajib verifikasi OTP email setiap sesi baru
+- Upload cerita dibatasi 5x/menit (anti spam bot)
+
+### Admin
+- CRUD semua user dan cerita
+- Tidak bisa hapus/edit sesama admin (anti privilege abuse)
+- Tidak bisa hapus diri sendiri (anti accidental lockout)
+- Akses activity log seluruh sistem
+
+### Secret Backup Panel (`/pahrigantenguye`)
+- Hanya admin yang tahu path ini
+- 4 lapis verifikasi: admin role + OTP email + panel password + CAPTCHA manual
+- Sesi aktif 15 menit setelah verifikasi
+- Semua aksi backup/restore tercatat di activity log
+
+---
+
+## 🔒 Detail Implementasi Keamanan
+
+### SQL Injection
+Laravel Eloquent menggunakan **PDO parameterized query** secara default. Input user tidak pernah di-concatenate langsung ke SQL string.
+```php
+$query->where('judul', 'like', '%' . $request->search . '%');
+// Dieksekusi sebagai: WHERE judul LIKE ? -- value terpisah dari query
+```
+
+### XSS (Cross-Site Scripting)
+Perlindungan 2 lapis:
+1. **Sanitasi input** — `strip_tags()` di controller sebelum disimpan ke database
+2. **Escaping output** — Blade `{{ }}` auto-escape, `{!! e() !!}` untuk field yang butuh render newline
+
+### CSRF
+Setiap form menggunakan `@csrf`. Laravel memvalidasi token unik per session di setiap request POST/PUT/DELETE.
+
+### IDOR
+```php
+$cerita = Cerita::where('user_id', Auth::id())->findOrFail($id);
+// ID valid tapi bukan miliknya → 404 (bukan 403, untuk obscurity)
+```
+
+### Mass Assignment
+Model `User` menggunakan `$fillable`. Field `role` tidak ada di validation rules form profile.
+
+### Brute Force — Rate Limiting
+
+| Endpoint | Limit |
+|----------|-------|
+| Forgot password | 3x/menit |
+| OTP verify publisher | 5x/menit |
+| OTP resend | 3x/menit |
+| Secret panel verify | 5x/menit |
+| Backup / Restore | 3x/menit |
+
+Khusus OTP publisher: **5 kali gagal → logout paksa + OTP di-invalidate di database**.
+
+### Command Injection
+```php
+$command = [$binary, '--host=' . $host, '--user=' . $username, $database];
+Process::run($command); // setiap argumen terisolasi
+```
+
+### Security Headers
+- `X-Frame-Options: DENY`
+- `X-Content-Type-Options: nosniff`
+- `X-XSS-Protection: 1; mode=block`
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `Permissions-Policy: camera=(), microphone=(), geolocation=()`
+
+### Password Policy (NIST SP 800-63B)
+- Minimal 12 karakter, huruf besar+kecil, simbol
+- Disimpan sebagai bcrypt hash cost factor 12
+
+### Audit Trail
+
+| Event | Trigger |
+|-------|---------|
+| `login` | User berhasil login |
+| `login_failed` | Percobaan login gagal |
+| `login_lockout` | Akun terkunci setelah 3x gagal |
+| `register` | User mendaftar |
+| `cerita_created` | Publisher tambah cerita |
+| `cerita_updated` | Publisher edit cerita |
+| `cerita_deleted` | Publisher hapus cerita |
+| `admin_deleted_user` | Admin hapus user |
+| `admin_deleted_cerita` | Admin hapus cerita |
+| `secret_panel_backup` | Admin backup database |
+| `secret_panel_restore` | Admin restore database |
+
+### Testing
+Project menggunakan **Pest PHP** dengan 30+ test case: RBAC, IDOR, XSS, mass assignment, SQL injection, OTP brute force, business logic.
+
+---
+
 ## 🔴 CRITICAL — Wajib Fix Sebelum Pentest
 
 - [x] **Pindahkan PANEL_PASSWORD dari hardcode ke .env** ✅ FIXED
@@ -14,7 +138,7 @@
   - View `cerita/baca.blade.php` sudah pakai `{!! nl2br(e($cerita->isi_cerita)) !!}`
   - Fungsi `e()` adalah Laravel HTML escape — XSS sudah dicegah di layer view
 
-- [ ] **Aktifkan CSP di production**
+- [x] **Aktifkan CSP di production**
   - File: `app/Http/Middleware/SecurityHeaders.php`
   - Set `SECURITY_ENABLE_CSP=true` di `.env` production
   - Hilangkan `unsafe-inline` dari script-src (gunakan nonce atau hash)
