@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -10,7 +10,6 @@
 </head>
 <body class="bg-[#fcfcfd] flex min-h-screen">
 
-    <!-- SIDEBAR -->
     <aside class="w-64 bg-[#7B4DFF] text-white flex flex-col pt-8">
         <div class="px-6 flex items-center gap-3 mb-12">
             <div class="w-10 h-10 bg-white rounded-full flex justify-center items-center text-[#7B4DFF] font-bold">
@@ -37,11 +36,9 @@
         </nav>
     </aside>
 
-    <!-- CONTENT -->
     <main class="flex-1 p-10">
         @php($authUser = Auth::user())
 
-        <!-- HEADER -->
         <div class="flex justify-between items-start mb-8">
             <div>
                 <h2 class="text-3xl font-bold text-gray-800">Daftar Cerita Anda</h2>
@@ -54,7 +51,6 @@
             </a>
         </div>
 
-        <!-- SUCCESS -->
         @if(session('success'))
             <div class="mb-6 p-4 bg-green-100 text-green-700 rounded-xl text-sm font-medium border border-green-200">
                 {{ session('success') }}
@@ -156,7 +152,6 @@
             </div>
         </div>
 
-        <!-- TABLE -->
         <div class="bg-white border border-gray-200 rounded-[24px] overflow-hidden shadow-sm">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">

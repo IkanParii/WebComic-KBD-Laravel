@@ -10,29 +10,26 @@ class Cerita extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 
-        'judul', 
-        'deskripsi_singkat', 
+        'user_id',
+        'judul',
+        'deskripsi_singkat',
         'tanggal_rilis',
         'isi_cerita',
     ];
 
-    // --- RELASI DATABASE ---
-
-    // Cerita ini milik 1 User (Publisher)
+    // Cerita dimiliki oleh satu User (Publisher)
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Cerita ini punya banyak Genre (Many-to-Many)
+    // Cerita bisa punya banyak Genre (Many-to-Many via tabel cerita_genre)
     public function genres()
     {
-        // Nggak perlu sebutin nama tabel pivot 'cerita_genre' karena udah sesuai standar Laravel
         return $this->belongsToMany(Genre::class);
     }
 
-    // Cerita ini difavoritkan oleh banyak User (Many-to-Many)
+    // Cerita bisa difavoritkan oleh banyak User (Many-to-Many via tabel favorites)
     public function favoritedBy()
     {
         return $this->belongsToMany(User::class, 'favorites');
