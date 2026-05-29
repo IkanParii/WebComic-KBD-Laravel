@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -19,7 +19,6 @@
 
     <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 rounded-[32px] overflow-hidden border-2 border-[#ddd6fe] bg-white shadow-[0_10px_30px_rgba(120,80,255,0.08)] min-h-[640px]">
 
-        <!-- LEFT -->
         <div class="relative bg-gradient-to-br from-[#7c4dff] via-[#7b57f6] to-[#8b5cf6] text-white px-8 md:px-10 py-10 md:py-12 overflow-hidden">
             <div class="absolute top-[-40px] right-[-30px] w-[220px] h-[220px] rounded-full bg-white/10"></div>
             <div class="absolute bottom-[-40px] left-[-40px] w-[150px] h-[150px] rounded-full bg-white/10"></div>
@@ -38,7 +37,6 @@
             </div>
         </div>
 
-        <!-- RIGHT -->
         <div class="bg-[#fafafa] flex items-center justify-center px-6 sm:px-10 md:px-14 py-10">
             <div class="w-full max-w-[460px]">
                 <h2 class="text-[34px] md:text-[42px] font-extrabold text-[#1f1f28] leading-tight">

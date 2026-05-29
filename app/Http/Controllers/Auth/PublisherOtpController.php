@@ -108,6 +108,7 @@ class PublisherOtpController extends Controller
         $request->session()->put('publisher_otp_verified', true);
         $request->session()->forget('publisher_otp_user_id');
         $request->session()->regenerate();
+        $this->clearSecretBackupIntendedUrl($request);
 
         ActivityLogger::log(
             'publisher_otp_verified',
@@ -167,6 +168,15 @@ class PublisherOtpController extends Controller
         );
 
         return back()->with('status', 'OTP baru sudah dikirim ke email Anda.');
+    }
+
+    private function clearSecretBackupIntendedUrl(Request $request): void
+    {
+        $intendedUrl = (string) $request->session()->get('url.intended', '');
+
+        if ($intendedUrl !== '' && Str::contains($intendedUrl, '/pahrigantenguye')) {
+            $request->session()->forget('url.intended');
+        }
     }
 
     private function otpVerifyThrottleKey(Request $request, User $user): string

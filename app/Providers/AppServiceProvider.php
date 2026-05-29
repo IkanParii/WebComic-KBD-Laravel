@@ -13,33 +13,20 @@ use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
-    {
-        //
-    }
+    public function register(): void {}
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        // if (config('app.env') !== 'local') {
-        //     URL::forceScheme('https');
-        // }
-        // --- KEAMANAN PASSWORD AUVERSE ---
+        // Password policy global: min 12 karakter, huruf besar+kecil, simbol (NIST SP 800-63B)
         Password::defaults(function () {
-            return Password::min(12)       // Minimal 12 karakter
-                ->letters()               // Wajib ada huruf
-                ->mixedCase()             // Wajib ada huruf BESAR dan kecil
-                ->symbols();              // Wajib ada simbol (@, #, !, dll)
-        }); // <--- Tadi lo lupa nutup di sini brow!
+            return Password::min(12)
+                ->letters()
+                ->mixedCase()
+                ->symbols();
+        });
 
-        // --- CUSTOM EMAIL RESET PASSWORD ---
+        // Custom template email reset password
         ResetPassword::toMailUsing(function (object $notifiable, string $token) {
-            // Generate link reset bawaan Laravel
             $url = url(route('password.reset', [
                 'token' => $token,
                 'email' => $notifiable->getEmailForPasswordReset(),
@@ -49,10 +36,11 @@ class AppServiceProvider extends ServiceProvider
                 ->subject('Reset Password Akun AuVerse')
                 ->view('emails.reset-password', [
                     'url' => $url,
-                    'user' => $notifiable
+                    'user' => $notifiable,
                 ]);
         });
 
+        // Catat setiap login berhasil ke activity log
         Event::listen(Login::class, function (Login $event) {
             ActivityLogger::log(
                 'login',
@@ -62,6 +50,7 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
+        // Catat setiap registrasi baru ke activity log
         Event::listen(Registered::class, function (Registered $event) {
             ActivityLogger::log(
                 'register',

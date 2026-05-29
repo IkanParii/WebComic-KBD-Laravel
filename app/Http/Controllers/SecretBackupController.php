@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\ActivityLogger;
 use App\Support\ManualCaptcha;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
@@ -17,8 +19,8 @@ class SecretBackupController extends Controller
 {
     private const CAPTCHA_CONTEXT = 'secret_backup_panel';
     private const SESSION_OTP_KEY = 'secret_backup_panel.otp';
+    private const SESSION_OTP_LAST_SENT_AT_KEY = 'secret_backup_panel.otp_last_sent_at';
     private const SESSION_VERIFIED_UNTIL_KEY = 'secret_backup_panel.verified_until';
-    private const PANEL_PASSWORD = 'rehangantenguye';
     private const VERIFIED_MINUTES = 15;
 
     public function index(Request $request): View
@@ -78,6 +80,13 @@ class SecretBackupController extends Controller
             return $this->redirectWithError($request, "Backup belum mendukung driver '{$connection}'.");
         }
 
+        ActivityLogger::log(
+            'secret_panel_backup',
+            sprintf('Admin %s membuat backup database: %s.', Auth::user()->name, $filename),
+            Auth::user(),
+            $request
+        );
+
         return back()->with('success', "Backup berhasil dibuat: {$filename}");
     }
 
@@ -91,7 +100,7 @@ class SecretBackupController extends Controller
                 'file',
                 'max:51200',
                 'extensions:sql',
-                'mimetypes:text/plain,application/sql,application/x-sql,application/octet-stream',
+                'mimetypes:text/plain,application/sql,application/x-sql',
             ],
         ]);
 
@@ -107,6 +116,13 @@ class SecretBackupController extends Controller
         } else {
             return $this->redirectWithError($request, "Restore belum mendukung driver '{$connection}'.");
         }
+
+        ActivityLogger::log(
+            'secret_panel_restore',
+            sprintf('Admin %s melakukan restore database.', Auth::user()->name),
+            Auth::user(),
+            $request
+        );
 
         return back()->with('success', 'Restore database berhasil dijalankan.');
     }
@@ -133,7 +149,7 @@ class SecretBackupController extends Controller
         $otpFromSession = (string) $request->session()->get(self::SESSION_OTP_KEY, '');
         $captchaAnswer = (string) $request->session()->get('manual_captcha.'.self::CAPTCHA_CONTEXT.'.answer', '');
 
-        if ($request->input('panel_password') !== self::PANEL_PASSWORD) {
+        if ($request->input('panel_password') !== (string) config('app.secret_panel_password', '')) {
             throw ValidationException::withMessages([
                 'panel_password' => 'Password panel salah.',
             ]);
@@ -177,7 +193,14 @@ class SecretBackupController extends Controller
         $request->session()->put(self::SESSION_OTP_KEY, $otp);
 
         if ($sendEmail) {
-            $this->sendOtpToAdminEmail($otp);
+            $lastSentAt = $request->session()->get(self::SESSION_OTP_LAST_SENT_AT_KEY);
+            $lastSentAtTime = $lastSentAt ? Carbon::parse((string) $lastSentAt) : null;
+            $canSendEmail = ! $lastSentAtTime || $lastSentAtTime->diffInSeconds(now()) >= 30;
+
+            if ($canSendEmail) {
+                $this->sendOtpToAdminEmail($otp);
+                $request->session()->put(self::SESSION_OTP_LAST_SENT_AT_KEY, now()->toDateTimeString());
+            }
         }
 
         return $otp;

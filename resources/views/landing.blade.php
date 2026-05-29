@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -23,7 +23,6 @@
 @endphp
 <body class="bg-[#f8f8fb] text-[#1f1f1f]">
 
-    <!-- Navbar -->
     <header class="sticky top-0 z-50 flex w-full items-center justify-between border-b border-[#e6dcff] bg-white/85 px-[6%] py-5 backdrop-blur-md">
         <div class="flex items-center gap-3 text-[1.1rem] font-bold">
             <div class="mb-0 flex h-12 w-12 items-center justify-center rounded-[18px] bg-white text-base font-bold text-[#7b4dff] shadow-[0_8px_20px_rgba(0,0,0,0.12)]">
@@ -41,7 +40,6 @@
         </nav>
     </header>
 
-    <!-- Hero -->
     <section id="home" class="relative overflow-hidden">
         <div class="absolute inset-0">
             <div class="h-full w-full bg-cover bg-center opacity-[0.14]" style="background-image: url('{{ $heroImage }}');"></div>
@@ -75,7 +73,6 @@
         </div>
     </section>
 
-    <!-- Fitur Utama -->
     <section id="feature" class="px-4 py-16 md:py-20">
         <div class="mx-auto max-w-[1200px]">
             <div class="text-center">
@@ -110,7 +107,6 @@
         </div>
     </section>
 
-    <!-- Kenapa -->
     <section id="about" class="px-4 pb-24 pt-8 md:pb-28 md:pt-16">
         <div class="mx-auto max-w-[1200px]">
             <div class="text-center">

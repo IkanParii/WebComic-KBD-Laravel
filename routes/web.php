@@ -7,47 +7,35 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SecretBackupController;
 use App\Http\Controllers\UserController;
 use App\Models\Cerita;
-use App\Models\Genre; 
+use App\Models\Genre;
 use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return view('landing');
 });
 
-// --- RUTE PROFILE & USER ---
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
-    // Rute Baca Cerita
-    Route::get('/cerita/{id}', [UserController::class, 'baca'])->name('cerita.baca');
 
-    // Rute buat Dashboard User & Fitur Favorit
+    Route::get('/cerita/{id}', [UserController::class, 'baca'])->name('cerita.baca');
     Route::get('/user/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
-    
-    // 🔥 THROTTLE FAVORITE: Cegah user pake auto-clicker nambahin favorit (Maks 30 kali per menit)
+
     Route::post('/user/favorite/{id}', [UserController::class, 'toggleFavorite'])
         ->middleware('throttle:30,1')
         ->name('user.favorite.toggle');
 });
 
-// --- RUTE PUBLISHER ---
 Route::middleware(['auth', 'verified', 'publisher.otp', 'publisher'])->prefix('publisher')->name('publisher.')->group(function () {
     Route::get('/daftar-cerita', [PublisherController::class, 'index'])->name('index');
     Route::get('/tambah-cerita', [PublisherController::class, 'create'])->name('create');
-    
-    // 🔥 THROTTLE POST CERITA: Cegah bot spam upload cerita sampah (Maks 5 cerita per menit)
-    Route::post('/tambah-cerita', [PublisherController::class, 'store'])
-        ->middleware('throttle:5,1')
-        ->name('store');
-        
+    Route::post('/tambah-cerita', [PublisherController::class, 'store'])->middleware('throttle:5,1')->name('store');
     Route::get('/edit-cerita/{id}', [PublisherController::class, 'edit'])->name('edit');
     Route::put('/update-cerita/{id}', [PublisherController::class, 'update'])->name('update');
     Route::delete('/hapus-cerita/{id}', [PublisherController::class, 'destroy'])->name('destroy');
 });
 
-// --- RUTE HOME FINAL ---
 Route::get('/home', function (Request $request) {
     $query = Cerita::with('genres')->latest();
 
@@ -61,13 +49,12 @@ Route::get('/home', function (Request $request) {
         });
     }
 
-    $ceritas = $query->get(); 
-    $genres = Genre::all(); 
+    $ceritas = $query->get();
+    $genres = Genre::all();
 
     return view('home', compact('ceritas', 'genres'));
 })->middleware(['auth', 'verified'])->name('home');
 
-// --- RUTE ADMIN ---
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::delete('/user/{id}', [AdminController::class, 'destroyUser'])->name('user.destroy');
@@ -77,10 +64,10 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
 
 Route::middleware(['auth', 'verified', 'admin'])->prefix('pahrigantenguye')->name('admin.secret.backup.')->group(function () {
     Route::get('/', [SecretBackupController::class, 'index'])->name('index');
-    Route::post('/verify', [SecretBackupController::class, 'verify'])->name('verify');
-    Route::post('/resend-otp', [SecretBackupController::class, 'resendOtp'])->name('resend-otp');
-    Route::post('/backup', [SecretBackupController::class, 'backup'])->name('store');
-    Route::post('/restore', [SecretBackupController::class, 'restore'])->name('restore');
+    Route::post('/verify', [SecretBackupController::class, 'verify'])->middleware('throttle:5,1')->name('verify');
+    Route::post('/resend-otp', [SecretBackupController::class, 'resendOtp'])->middleware('throttle:3,1')->name('resend-otp');
+    Route::post('/backup', [SecretBackupController::class, 'backup'])->middleware('throttle:3,1')->name('store');
+    Route::post('/restore', [SecretBackupController::class, 'restore'])->middleware('throttle:3,1')->name('restore');
 });
 
 require __DIR__.'/auth.php';

@@ -13,9 +13,10 @@ class AdminController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Data buat di TABEL (Admin sengaja di-hide biar aman)
+        // Sembunyikan sesama admin dari tabel user agar tidak bisa dihapus via UI
         $users = User::where('role', '!=', 'admin')->latest()->get();
         $ceritas = Cerita::latest()->get();
+
         $selectedEvent = (string) $request->query('event', '');
         $eventOptions = ActivityLog::query()
             ->select('event')
@@ -28,43 +29,41 @@ class AdminController extends Controller
             $activityLogsQuery->where('event', $selectedEvent);
         }
         $activityLogs = $activityLogsQuery->take(50)->get();
-        
-        // 2. Data logic buat di KARTU OVERVIEW 
-        $totalSemuaUser = User::count(); 
+
+        $totalSemuaUser = User::count();
         $totalSemuaCerita = Cerita::count();
 
         return view('admin.dashboard', compact(
-            'users', 
-            'ceritas', 
+            'users',
+            'ceritas',
             'activityLogs',
             'eventOptions',
             'selectedEvent',
-            'totalSemuaUser', 
+            'totalSemuaUser',
             'totalSemuaCerita'
         ));
     }
 
-    // --- FITUR HAPUS USER ---
     public function destroyUser($id)
     {
         /** @var \App\Models\User $admin */
         $admin = Auth::user();
         $user = User::findOrFail($id);
 
-        // SECURITY TWEAK: Cegah Admin hapus dirinya sendiri
+        // Cegah admin hapus akunnya sendiri
         if ($user->id === Auth::id()) {
-            return back()->with('error', 'Waduh, lo nggak bisa nendang diri lo sendiri brow!');
+            return back()->with('error', 'Anda tidak bisa menghapus akun sendiri.');
         }
 
-        // SECURITY TWEAK: Cegah Admin hapus Admin lainnya
+        // Cegah admin hapus sesama admin
         if ($user->role === 'admin') {
-            return back()->with('error', 'Sesama Admin dilarang saling sikut!');
+            return back()->with('error', 'Admin tidak bisa menghapus sesama admin.');
         }
 
         $targetName = $user->name;
         $targetRole = $user->role;
         $targetEmail = $user->email;
-        $user->delete(); 
+        $user->delete();
 
         ActivityLogger::log(
             'admin_deleted_user',
@@ -79,33 +78,30 @@ class AdminController extends Controller
             request()
         );
 
-        return back()->with('success', 'User berhasil ditendang!');
+        return back()->with('success', 'User berhasil dihapus.');
     }
 
-    // --- FITUR UPDATE USERNAME ---
     public function updateUser(Request $request, $id)
     {
         $user = User::findOrFail($id);
 
-        // SECURITY TWEAK: Cegah Admin ngedit profil sesama Admin
+        // Cegah admin edit data sesama admin
         if ($user->role === 'admin') {
-            return back()->with('error', 'Dilarang ngedit data sesama Admin!');
+            return back()->with('error', 'Admin tidak bisa mengedit data sesama admin.');
         }
 
-        // Validasi inputan biar aman 
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
 
-        // Update nama user pake strip_tags biar aman dari script jahat
+        // strip_tags mencegah XSS via input nama
         $user->update([
             'name' => strip_tags($request->name),
         ]);
 
-        return back()->with('success', 'Username berhasil diubah paksa!');
+        return back()->with('success', 'Username berhasil diubah.');
     }
 
-    // --- FITUR HAPUS CERITA ---
     public function destroyCerita($id)
     {
         /** @var \App\Models\User $admin */
@@ -127,6 +123,6 @@ class AdminController extends Controller
             request()
         );
 
-        return back()->with('success', 'Komik berhasil dihapus!');
+        return back()->with('success', 'Cerita berhasil dihapus.');
     }
 }

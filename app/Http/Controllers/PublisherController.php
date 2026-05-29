@@ -7,20 +7,20 @@ use App\Models\Genre;
 use App\Support\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule; // 👈 Wajib tambahin ini buat ignore unique pas update
+use Illuminate\Validation\Rule;
 
 class PublisherController extends Controller
 {
-    // 1. DAFTAR CERITA
     public function index()
     {
+        // Hanya tampilkan cerita milik publisher yang sedang login
         $ceritas = Cerita::where('user_id', Auth::id())->with('genres')->latest()->get();
         return view('publisher.index', compact('ceritas'));
     }
 
-    // --- SECURITY TWEAK: Cegah IDOR Hapus Data Orang Lain ---
     public function destroy($id)
     {
+        // Filter by user_id mencegah publisher hapus cerita milik orang lain (IDOR protection)
         $cerita = Cerita::where('user_id', Auth::id())->findOrFail($id);
         $judul = $cerita->judul;
         $cerita->delete();
@@ -31,31 +31,27 @@ class PublisherController extends Controller
             Auth::user(),
             request()
         );
-        
+
         return redirect()->route('publisher.index')->with('success', 'Cerita berhasil dihapus!');
     }
 
-    // 2. FORM TAMBAH
     public function create()
     {
         $genres = Genre::all();
         return view('publisher.create', compact('genres'));
     }
-    
-    // 3. SIMPAN CERITA BARU
+
     public function store(Request $request)
     {
         $request->validate([
-            // 👇 Tambahin unique:ceritas,judul di sini
             'judul' => 'required|string|max:255|unique:ceritas,judul',
             'tanggal_rilis' => 'required|date',
-            'deskripsi_singkat' => 'required|string|max:1000', 
-            'isi_cerita' => 'required|string', 
+            'deskripsi_singkat' => 'required|string|max:1000',
+            'isi_cerita' => 'required|string',
             'genres' => 'required|array',
-            'genres.*' => 'exists:genres,id', 
+            'genres.*' => 'exists:genres,id',
         ], [
-            // 👇 Pesan error custom biar user ngerti
-            'judul.unique' => 'Judul cerita ini sudah ada yang pakai, coba judul lain brow!',
+            'judul.unique' => 'Judul cerita ini sudah digunakan, coba judul lain.',
         ]);
 
         $cerita = Cerita::create([
@@ -63,7 +59,7 @@ class PublisherController extends Controller
             'judul' => strip_tags($request->judul),
             'tanggal_rilis' => $request->tanggal_rilis,
             'deskripsi_singkat' => strip_tags($request->deskripsi_singkat),
-            'isi_cerita' => $request->isi_cerita, 
+            'isi_cerita' => $request->isi_cerita,
         ]);
 
         $cerita->genres()->attach($request->genres);
@@ -78,9 +74,9 @@ class PublisherController extends Controller
         return redirect()->route('publisher.index')->with('success', 'Cerita berhasil dibuat!');
     }
 
-    // 4. FORM EDIT
     public function edit($id)
     {
+        // Filter by user_id mencegah publisher edit cerita milik orang lain (IDOR protection)
         $cerita = Cerita::where('user_id', Auth::id())->findOrFail($id);
         $genres = Genre::all();
         $selectedGenres = $cerita->genres->pluck('id')->toArray();
@@ -88,28 +84,27 @@ class PublisherController extends Controller
         return view('publisher.edit', compact('cerita', 'genres', 'selectedGenres'));
     }
 
-    // 5. UPDATE CERITA
     public function update(Request $request, $id)
     {
+        // Filter by user_id mencegah publisher update cerita milik orang lain (IDOR protection)
         $cerita = Cerita::where('user_id', Auth::id())->findOrFail($id);
         $judulSebelum = $cerita->judul;
 
         $request->validate([
-            // 👇 Pake Rule::unique() biar bisa di-ignore pas ngedit judul yang sama
+            // Rule::unique()->ignore() agar judul yang sama tidak dianggap duplikat saat edit
             'judul' => [
-                'required', 
-                'string', 
-                'max:255', 
-                Rule::unique('ceritas', 'judul')->ignore($id)
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('ceritas', 'judul')->ignore($id),
             ],
             'tanggal_rilis' => 'required|date',
             'deskripsi_singkat' => 'required|string|max:1000',
-            'isi_cerita' => 'required|string', 
+            'isi_cerita' => 'required|string',
             'genres' => 'required|array',
             'genres.*' => 'exists:genres,id',
         ], [
-            // 👇 Pesan error custom juga di sini
-            'judul.unique' => 'Judul cerita ini sudah ada yang pakai, coba judul lain brow!',
+            'judul.unique' => 'Judul cerita ini sudah digunakan, coba judul lain.',
         ]);
 
         $cerita->update([
