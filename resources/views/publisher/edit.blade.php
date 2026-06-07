@@ -187,5 +187,6 @@
             }, 200);
         }
     </script>
+<x-inactivity-timer />
 </body>
 </html>

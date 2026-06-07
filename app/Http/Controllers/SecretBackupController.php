@@ -6,6 +6,7 @@ use App\Support\ActivityLogger;
 use App\Support\ManualCaptcha;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Process;
 use RuntimeException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use SplFileInfo;
 
 class SecretBackupController extends Controller
 {
@@ -35,11 +37,91 @@ class SecretBackupController extends Controller
             }
         }
 
+        $backupFiles = $this->getBackupFiles();
+
         return view('admin.secret-backup-panel', [
             'captchaQuestion' => $captchaQuestion,
             'isVerified' => $isVerified,
             'verifiedUntil' => $request->session()->get(self::SESSION_VERIFIED_UNTIL_KEY),
+            'backupFiles' => $backupFiles,
         ]);
+    }
+
+    public function downloadBackup(Request $request, string $filename): mixed
+    {
+        $this->ensureVerified($request);
+
+        $safeName = $this->safeFilename($filename);
+        $filePath = storage_path('app/backups/' . $safeName);
+
+        if (! $safeName || ! File::exists($filePath)) {
+            return $this->redirectWithError($request, 'File backup tidak ditemukan.');
+        }
+
+        ActivityLogger::log(
+            'secret_panel_download',
+            sprintf('Admin %s mengunduh backup: %s.', Auth::user()->name, $safeName),
+            Auth::user(),
+            $request
+        );
+
+        return response()->download($filePath, $safeName);
+    }
+
+    public function deleteBackup(Request $request, string $filename): RedirectResponse
+    {
+        $this->ensureVerified($request);
+
+        $safeName = $this->safeFilename($filename);
+        $filePath = storage_path('app/backups/' . $safeName);
+
+        if (! $safeName || ! File::exists($filePath)) {
+            return $this->redirectWithError($request, 'File backup tidak ditemukan.');
+        }
+
+        File::delete($filePath);
+
+        ActivityLogger::log(
+            'secret_panel_delete_backup',
+            sprintf('Admin %s menghapus backup: %s.', Auth::user()->name, $safeName),
+            Auth::user(),
+            $request
+        );
+
+        return back()->with('success', "File backup '{$safeName}' berhasil dihapus.");
+    }
+
+    public function restoreFromServer(Request $request): RedirectResponse
+    {
+        $this->ensureVerified($request);
+
+        $request->validate([
+            'server_backup_file' => ['required', 'string'],
+        ]);
+
+        $safeName = $this->safeFilename((string) $request->input('server_backup_file', ''));
+        $filePath = storage_path('app/backups/' . $safeName);
+
+        if (! $safeName || ! File::exists($filePath) || ! str_ends_with($safeName, '.sql')) {
+            return $this->redirectWithError($request, 'File backup tidak valid atau tidak ditemukan di server.');
+        }
+
+        $connection = config('database.default');
+
+        if (in_array($connection, ['mysql', 'mariadb'], true)) {
+            $this->restoreMysqlDatabase($filePath);
+        } else {
+            return $this->redirectWithError($request, "Restore belum mendukung driver '{$connection}'.");
+        }
+
+        ActivityLogger::log(
+            'secret_panel_restore_server',
+            sprintf('Admin %s melakukan restore database dari file server: %s.', Auth::user()->name, $safeName),
+            Auth::user(),
+            $request
+        );
+
+        return back()->with('success', "Restore database dari '{$safeName}' berhasil dijalankan.");
     }
 
     public function verify(Request $request): RedirectResponse
@@ -407,6 +489,67 @@ class SecretBackupController extends Controller
         }
 
         return back()->withErrors(['panel' => $message]);
+    }
+
+    /**
+     * Ambil daftar file backup dari storage, diurutkan dari yang terbaru.
+     *
+     * @return array<int, array{name: string, size: int, size_human: string, modified: string, modified_timestamp: int}>
+     */
+    private function getBackupFiles(): array
+    {
+        $diskPath = storage_path('app/backups');
+        if (! is_dir($diskPath)) {
+            return [];
+        }
+
+        $files = File::files($diskPath);
+        $result = [];
+
+        foreach ($files as $file) {
+            if ($file->getExtension() !== 'sql') {
+                continue;
+            }
+
+            $sizeBytes = $file->getSize();
+            $result[] = [
+                'name'               => $file->getFilename(),
+                'size'               => $sizeBytes,
+                'size_human'         => $this->humanFileSize((int) $sizeBytes),
+                'modified'           => Carbon::createFromTimestamp($file->getMTime())->format('d M Y, H:i'),
+                'modified_timestamp' => $file->getMTime(),
+            ];
+        }
+
+        usort($result, fn ($a, $b) => $b['modified_timestamp'] <=> $a['modified_timestamp']);
+
+        return $result;
+    }
+
+    /**
+     * Validasi filename agar aman dari path traversal.
+     * Hanya mengizinkan file .sql di folder backups.
+     */
+    private function safeFilename(string $filename): string
+    {
+        $base = basename($filename);
+        // Hanya izinkan karakter aman: huruf, angka, titik, underscore, strip
+        if (! preg_match('/^[\w\-\.]+\.sql$/i', $base)) {
+            return '';
+        }
+
+        return $base;
+    }
+
+    private function humanFileSize(int $bytes): string
+    {
+        if ($bytes < 1024) {
+            return $bytes . ' B';
+        } elseif ($bytes < 1048576) {
+            return round($bytes / 1024, 1) . ' KB';
+        } else {
+            return round($bytes / 1048576, 2) . ' MB';
+        }
     }
 
     /**

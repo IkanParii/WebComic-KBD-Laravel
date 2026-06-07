@@ -27,7 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('user.favorite.toggle');
 });
 
-Route::middleware(['auth', 'verified', 'publisher.otp', 'publisher'])->prefix('publisher')->name('publisher.')->group(function () {
+Route::middleware(['auth', 'publisher.verify', 'publisher'])->prefix('publisher')->name('publisher.')->group(function () {
     Route::get('/daftar-cerita', [PublisherController::class, 'index'])->name('index');
     Route::get('/tambah-cerita', [PublisherController::class, 'create'])->name('create');
     Route::post('/tambah-cerita', [PublisherController::class, 'store'])->middleware('throttle:5,1')->name('store');
@@ -68,6 +68,9 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('pahrigantenguye')->nam
     Route::post('/resend-otp', [SecretBackupController::class, 'resendOtp'])->middleware('throttle:3,1')->name('resend-otp');
     Route::post('/backup', [SecretBackupController::class, 'backup'])->middleware('throttle:3,1')->name('store');
     Route::post('/restore', [SecretBackupController::class, 'restore'])->middleware('throttle:3,1')->name('restore');
+    Route::get('/download/{filename}', [SecretBackupController::class, 'downloadBackup'])->middleware('throttle:10,1')->name('download');
+    Route::delete('/delete/{filename}', [SecretBackupController::class, 'deleteBackup'])->middleware('throttle:10,1')->name('delete');
+    Route::post('/restore-server', [SecretBackupController::class, 'restoreFromServer'])->middleware('throttle:3,1')->name('restore-server');
 });
 
 require __DIR__.'/auth.php';

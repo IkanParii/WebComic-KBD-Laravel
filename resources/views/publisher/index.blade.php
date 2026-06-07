@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -230,5 +230,6 @@
             }
         }
     </script>
+<x-inactivity-timer />
 </body>
 </html>

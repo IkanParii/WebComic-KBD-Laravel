@@ -143,5 +143,8 @@
             </div>
         </div>
     </section>
+    @auth
+        <x-inactivity-timer />
+    @endauth
 </body>
 </html>

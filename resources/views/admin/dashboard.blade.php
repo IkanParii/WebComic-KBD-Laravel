@@ -326,5 +326,6 @@
     }
 </script>
 
+<x-inactivity-timer />
 </body>
 </html>

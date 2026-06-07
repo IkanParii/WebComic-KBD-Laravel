@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
@@ -28,5 +28,9 @@
                 {{ $slot }}
             </main>
         </div>
+
+        @auth
+            <x-inactivity-timer />
+        @endauth
     </body>
 </html>

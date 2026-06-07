@@ -99,6 +99,11 @@ class PublisherOtpController extends Controller
         $remember = (bool) $request->session()->pull('publisher_otp_remember', false);
         Auth::login($user, $remember);
 
+        // Auto-verify email untuk publisher setelah OTP berhasil
+        if (!$user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
+        }
+
         $user->update([
             'publisher_otp_code' => null,
             'publisher_otp_expires_at' => null,
@@ -117,7 +122,7 @@ class PublisherOtpController extends Controller
             $request
         );
 
-        return redirect()->intended(route('home', absolute: false));
+        return redirect()->intended(route('publisher.index', absolute: false));
     }
 
     public function resend(Request $request): RedirectResponse

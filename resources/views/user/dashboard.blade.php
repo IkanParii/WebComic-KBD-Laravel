@@ -153,7 +153,9 @@
                     @forelse($favoritCeritas as $cerita)
                         <div class="flex justify-between items-center py-5 border-b border-[#f4f3f8] last:border-0 group">
                             <div class="pr-6">
-                                <h4 class="font-extrabold text-[#222222] text-[16px] group-hover:text-[#6f42f5] transition">{{ $cerita->judul }}</h4>
+                                <a href="{{ route('cerita.baca', $cerita->id) }}" class="inline-block outline-none">
+                                    <h4 class="font-extrabold text-[#222222] text-[16px] group-hover:text-[#6f42f5] transition">{{ $cerita->judul }}</h4>
+                                </a>
                                 <p class="text-[13px] font-medium text-[#8e8e99] mt-1">
                                     Disimpan pada: {{ $cerita->pivot->created_at ? $cerita->pivot->created_at->format('d M Y') : 'Baru saja' }}
                                 </p>
@@ -197,5 +199,6 @@
             }
         }
     </script>
+<x-inactivity-timer />
 </body>
 </html>

@@ -124,5 +124,6 @@
         </div>
     </main>
 
+<x-inactivity-timer />
 </body>
 </html>

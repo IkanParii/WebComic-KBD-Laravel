@@ -77,6 +77,11 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
+        // Jika publisher, jangan langsung login, redirect ke proses OTP
+        if ($request->role === 'publisher') {
+            return redirect()->route('login')->with('status', 'Registrasi berhasil! Silakan login dengan akun publisher Anda untuk verifikasi OTP.');
+        }
+
         Auth::login($user);
 
         return redirect(route('home', absolute: false));
