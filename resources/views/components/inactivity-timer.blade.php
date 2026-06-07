@@ -233,11 +233,24 @@
 
     // Throttle agar tidak terlalu sering reset (maks 1x per 10 detik)
     let lastResetAt = 0;
+    let lastPingAt = Date.now();
+
     function onActivity() {
         const now = Date.now();
         if (now - lastResetAt < 10_000) return;
         lastResetAt = now;
         resetTimers();
+
+        // Ping server (refresh session backend) maks 1x setiap 5 menit
+        // biar kalau user asyik scroll baca komik lama, server nggak nge-logout mereka
+        if (now - lastPingAt > 300_000) {
+            lastPingAt = now;
+            fetch(window.location.href, {
+                method: 'HEAD',
+                credentials: 'same-origin',
+                headers: { 'X-CSRF-TOKEN': CSRF_TOKEN },
+            }).catch(function () { /* silent fail */ });
+        }
     }
 
     ACTIVITY_EVENTS.forEach(function (event) {
