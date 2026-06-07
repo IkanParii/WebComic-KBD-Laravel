@@ -26,7 +26,7 @@ class InactivityLogout
             return $next($request);
         }
 
-        $timeoutMinutes = (int) env('SESSION_INACTIVITY_TIMEOUT', 30);
+        $timeoutMinutes = (int) config('session.inactivity_timeout', env('SESSION_INACTIVITY_TIMEOUT', 30));
         $timeoutSeconds = $timeoutMinutes * 60;
 
         $lastActivity = $request->session()->get('last_activity');

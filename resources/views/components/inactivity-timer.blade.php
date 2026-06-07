@@ -10,8 +10,11 @@
     @param string $logoutRoute  - URL untuk logout POST action
     @param int $warnBeforeSeconds - berapa detik sebelum logout tampilkan warning (default: 60)
 --}}
+@auth
 @php
-    $timeoutMinutes   = (int) env('SESSION_INACTIVITY_TIMEOUT', 30);
+    // Gunakan config() dengan fallback env() karena di server production (atau saat config di-cache),
+    // fungsi env() langsung akan me-return null.
+    $timeoutMinutes   = (int) config('session.inactivity_timeout', env('SESSION_INACTIVITY_TIMEOUT', 30));
     $timeoutMs        = $timeoutMinutes * 60 * 1000;
     $warnBeforeMs     = min(60_000, (int) ($timeoutMs * 0.2)); // 20% dari timeout atau maks 60 detik
     $logoutUrl        = route('logout');
@@ -326,3 +329,4 @@
     });
 })();
 </script>
+@endauth
