@@ -122,6 +122,32 @@
     </div>
 </div>
 
+{{-- Floating Debug Timer --}}
+<div id="__inactivity_floating_timer" style="
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    padding: 8px 16px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Inter', 'Poppins', monospace;
+    z-index: 99998;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+">
+    <span style="display:inline-block; width:8px; height:8px; background:#10b981; border-radius:50%; box-shadow:0 0 8px #10b981;"></span>
+    Logout dlm: <span id="__inactivity_time_left" style="color: #f8fafc; font-weight: 700; width: 40px; text-align: right;">--:--</span>
+</div>
+
 <script>
 (function () {
     'use strict';
@@ -139,16 +165,48 @@
     let warningShown      = false;
     let countdownSeconds  = Math.round(WARN_BEFORE_MS / 1000);
 
+    // Timer state for floating debug timer
+    let totalTimeRemaining = TIMEOUT_MS / 1000;
+    let floatingTimerInterval = null;
+
     // ── DOM refs ───────────────────────────────────────────────────────
-    const toast        = document.getElementById('__inactivity_toast');
-    const countdownEl  = document.getElementById('__inactivity_countdown');
-    const progressBar  = document.getElementById('__inactivity_progress_bar');
+    const toast          = document.getElementById('__inactivity_toast');
+    const countdownEl    = document.getElementById('__inactivity_countdown');
+    const progressBar    = document.getElementById('__inactivity_progress_bar');
+    const floatingTimeEl = document.getElementById('__inactivity_time_left');
+
+    // ── Floating Timer Display ─────────────────────────────────────────
+    function startFloatingTimer() {
+        totalTimeRemaining = TIMEOUT_MS / 1000;
+        clearInterval(floatingTimerInterval);
+        
+        function updateDisplay() {
+            if (totalTimeRemaining < 0) totalTimeRemaining = 0;
+            const m = Math.floor(totalTimeRemaining / 60).toString().padStart(2, '0');
+            const s = (Math.floor(totalTimeRemaining) % 60).toString().padStart(2, '0');
+            if (floatingTimeEl) {
+                floatingTimeEl.textContent = m + ':' + s;
+            }
+        }
+        
+        updateDisplay();
+        
+        floatingTimerInterval = setInterval(function() {
+            totalTimeRemaining -= 1;
+            updateDisplay();
+            if (totalTimeRemaining <= 0) {
+                clearInterval(floatingTimerInterval);
+            }
+        }, 1000);
+    }
 
     // ── Reset semua timer ──────────────────────────────────────────────
     function resetTimers() {
         clearTimeout(inactivityTimer);
         clearTimeout(warningTimer);
         clearInterval(countdownInterval);
+
+        startFloatingTimer();
 
         // Set warning timer
         warningTimer = setTimeout(showWarning, TIMEOUT_MS - WARN_BEFORE_MS);
