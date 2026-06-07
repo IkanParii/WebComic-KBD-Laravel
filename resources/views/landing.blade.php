@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -141,5 +141,8 @@
         </div>
     </section>
 
+    @auth
+        <x-inactivity-timer />
+    @endauth
 </body>
 </html>
